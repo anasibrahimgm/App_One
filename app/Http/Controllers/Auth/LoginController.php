@@ -26,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/home';//this helps if the user intended to open 'updateProfile' route bc there is a fn to redirect the use in HomeController for that.
 
     /**
      * Create a new controller instance.
