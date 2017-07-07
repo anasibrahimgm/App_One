@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 //use Illuminate\Foundation\Auth\RegistersUsers;
 use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
 
+
 class RegisterController extends Controller
 {
     /*
@@ -50,8 +51,8 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
+            'username' => 'required|string|alpha_dash|max:255|unique:users_one',//shouldn't have spaces
+            'email' => 'required|string|email|max:255|unique:users_one',
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
