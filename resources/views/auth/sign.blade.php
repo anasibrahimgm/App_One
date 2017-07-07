@@ -12,7 +12,7 @@
           <li class="{{ $registerActive ?  "active" : "" }} registerLi"><a data-toggle="tab" href="#register" id="registerA">Register</a></li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content tab-content-sign">
           <div id="login" class="tab-pane fade in {{ $registerActive ?  "" : "active" }}">
             @include('../partials._login')
           </div>

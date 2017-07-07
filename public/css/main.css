@@ -29,7 +29,7 @@ body {
   color: #222222;
 }
 
-.tab-content {
+.tab-content-sign {
   padding-top: 30px;
   padding-bottom: 30px;
 }
@@ -73,4 +73,104 @@ body {
 
 .active a{
   color: #337ab7 !important;
+}
+
+/*Profiles*/
+
+.user-basicInfo, .feeds, .edit_fields {
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.basicInfo-left, .feeds-left, .edit_fields-left {
+  float: left;
+  width: 20%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.basicInfo-left img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius:50%;
+}
+
+.basicInfo-right, .feeds-right, .edit_fields-right {
+  float: right;
+  width: 80%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.basicInfo-right .info, .feeds-right .info , .edit_fields-right div{
+    margin-left: 4%;
+}
+
+.info .userName{
+  font-family: 'Lobster', cursive;
+  font-size: 40px;
+}
+
+.userBio {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+}
+
+.feeds {
+  margin-top: 15px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 17px;
+}
+
+.nav-pills>li.active>a{
+    color: #fff !important;
+    background-color: #337ab7;
+}
+
+        /*Edit Profile*/
+
+
+.edit_fields-left p {
+  line-height:38px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 20px;
+  margin-left: 30%;
+}
+
+.userNameEdit, .userBioEdit {
+  background-color: #F4F4EF;
+  border: none;
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.userNameEdit {
+  height: 60px !important;
+  width: 300px;
+}
+
+.basicInfo-left-edit {
+  width: 20%;
+  border-radius:50%;
+}
+
+
+
+
+
+
+.horizontalTab:after {
+  content: '';
+  display: block;
+  height: 2px;
+  background-color: green ;/*#ECECEC*/
+  margin: 10px 0;
+}
+
+.horizontalTabSmall:after {
+  content: '';
+  display: block;
+  height: 1px;
+  background-color: green ;/*#ECECEC*/
+  margin: 10px 0;
 }

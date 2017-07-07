@@ -32,4 +32,18 @@ $(function () {
     margins();
   });
 
+    var x = $('.basicInfo-left').width() - 10;
+    x += 'px';
+    $('.basicInfo-left-edit').css({
+      'height': x,
+      'width': x,
+    });
+
+    var imgUrl = $('#profile-img-edit').attr('src');
+    imgUrl = "url(" + imgUrl + ")";
+
+  $('.basicInfo-left-edit').css({
+    'backgroundImage': imgUrl,
+  });
+
 });

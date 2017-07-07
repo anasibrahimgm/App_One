@@ -67,3 +67,16 @@ Application Name in .env
     //user says ok
     //fb sends the website back an access token
     //the website can access user info with the access token
+
+011.
+      image.intervention.io
+      composer require intervention/image
+
+    +  asset() gives us the public url to the 'public folder'
+
+    @ /vendor/bestmomo/laravel-email-confirmation/routes/web.php
+      Route::get('confirmation/resend', 'Auth\RegisterController@resend')->name('confirmation.resend');
+    Route::get('confirmation/{id}/{token}', 'Auth\RegisterController@confirm');
+
+
+    composer require "laravelcollective/html":"^5.4.0"

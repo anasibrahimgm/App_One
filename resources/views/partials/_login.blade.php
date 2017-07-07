@@ -10,6 +10,13 @@
     </div>
 @endif
 
+@if (session('email-change-success'))
+	<div class="alert alert-success" role="alert">
+		<strong>Success:</strong> <i>{!! session('email-change-success') !!}</i>
+	</div>
+  {!! session()->forget('email-change-success') !!}
+@endif
+
 <form class="form-horizontal login" role="form" method="POST" action="{{ url('/login') }}">
     {{ csrf_field() }}
 

@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 //use Illuminate\Foundation\Auth\RegistersUsers;
 use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
-
+use Storage;
+use Image;
 
 class RegisterController extends Controller
 {
