@@ -21,7 +21,7 @@ class ProfilesController extends Controller
         if (Auth::check()) {
           return view('profiles.edit');
         }
-
+        session()->put('intendedRoute', 'editProfile');
         return redirect()->route('login');//if not a logged-in user
     }
 

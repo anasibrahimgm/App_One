@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Session;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,14 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if(session('intendedRoute'))
+        {
+          $my_route = session('intendedRoute');
+          session()->forget('intendedRoute');
+
+          return redirect()->route($my_route);
+        }
+        
         return view('home');
     }
 }
