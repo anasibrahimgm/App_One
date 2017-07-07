@@ -20,3 +20,11 @@
            use Bestmomo\LaravelEmailConfirmation\Traits\ResetsPasswords;
 
          php artisan confirmation:auth
+004.
+  ////confirmation messages
+     vendor/bestmomo/laravel-email-confirmation/publishable/translations/en/confirmation.php
+      'email-title', 'email-intro', 'email-button' are sent in the email body
+
+Application Name in .env
+  APP_NAME=App_One
+  APP_URL=http://one.app
