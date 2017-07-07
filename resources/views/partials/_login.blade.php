@@ -1,10 +1,11 @@
-@if (session('confirmation-success'))
-    <div class="alert alert-success">
+@if (session('confirmation-success')  and strpos(session('confirmation-success') , "login") )
+    <div class="col-md-10 col-md-offset-1 alert alert-success">
         {{ session('confirmation-success') }}
     </div>
 @endif
+
 @if (session('confirmation-danger'))
-    <div class="alert alert-danger">
+    <div class="col-md-10 col-md-offset-1 alert alert-danger">
         {!! session('confirmation-danger') !!}
     </div>
 @endif
@@ -12,11 +13,11 @@
 <form class="form-horizontal login" role="form" method="POST" action="{{ url('/login') }}">
     {{ csrf_field() }}
 
-    <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+    <div class="form-group{{ ( $errors->has('email') and !$registerActive ) ? ' has-error' : '' }}">
         <div class="col-md-10 col-md-offset-1">
-            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus placeholder="Email Address">
+            <input id="email" type="email" class="form-control" name="email" value="{{ !$registerActive ? old('email') : "" }}" required autofocus placeholder="Email Address">
 
-            @if ($errors->has('email'))
+            @if ($errors->has('email') and !$registerActive)
                 <span class="help-block">
                     <strong>{{ $errors->first('email') }}</strong>
                 </span>
@@ -24,11 +25,11 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+    <div class="form-group{{ ( $errors->has('password') and !$registerActive ) ? ' has-error' : '' }}">
         <div class="col-md-10 col-md-offset-1">
             <input id="password" type="password" class="form-control" name="password" required placeholder="Password">
 
-            @if ($errors->has('password'))
+            @if ($errors->has('password') and !$registerActive)
                 <span class="help-block">
                     <strong>{{ $errors->first('password') }}</strong>
                 </span>

@@ -33,10 +33,6 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/login', function () {
-  return view('auth.sign');
-})->name('login');
+Route::get('/login', 'Auth\LoginController@getLogin')->name('login');
 
-Route::get('/register', function () {
-  return view('auth.sign');
-})->name('register');
+Route::get('/register', 'Auth\RegisterController@getRegister')->name('register');

@@ -1,4 +1,5 @@
-$(function(){
+$(function () {
+  margins();
 
   var value = $('.myUl').width();
   value /= 2;
@@ -7,19 +8,28 @@ $(function(){
   //$("#registerA").width(value2);
   //$("#loginA").width(value2-30);
 
-  var x =  ( $('.myTabsRow').width() - $('.myTabs').outerWidth() ) / 2;
-  x += 'px';
-  $('.myTabs').css({
-    'marginLeft': x ,
-  });
-  // we need to keep track of window width
+  function margins () {
+    var x =  $('.myTabsRow').width() - $('.myTabs').width();
+    x /= 2;
+    x += 'px';
 
-  var y =  ( $('.navContainer').width() - $('.navContainer').css('paddingRight') * 2 - $('.navA').outerWidth() ) / 2; //must be 940 - 106.sth
-  y += 'px';
-  var z = $('.navContainer').css('paddingRight');
-  //we need to get the number part out of it!
+    $('.myTabs').css({
+      'marginLeft': x ,
+      'marginRight': x ,
+    });
 
-  $('.navA').css({
-    'marginLeft': y ,
+    var y =  $('.navContainer').width() - $('.navA').width();
+    y /= 2;
+    y += 'px';
+
+    $('.navA').css({
+      'marginLeft': y ,
+      'marginRight': y ,
+    });
+  }
+
+  $(window).resize(function () {//on window width change
+    margins();
   });
+
 });
