@@ -1,0 +1,33 @@
+.social-links {
+  padding-top: 10px;
+}
+
+.social-links span {
+  color: #333333;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  float: right;
+}
+
+.social-links .links {
+  padding-top: 23px;
+  padding-left: 25px;
+}
+
+.social-links i {
+  color: #ccc;
+  padding-right: 80px;
+}
+
+.social-links .fa-facebook:hover{
+  color: #3B5998;
+}
+
+.social-links .fa-twitter:hover{
+  color: #1DA1F2;
+}
+
+.social-links .fa-github:hover{
+  color: #222222;
+}

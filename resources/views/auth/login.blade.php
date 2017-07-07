@@ -71,6 +71,14 @@
                                 </a>
                             </div>
                         </div>
+
+                        <div class="row social-links">
+                          <div class="col-md-4">
+                            <span class="social-label">Or Login with:</span>
+                          </div>
+                          @include('../partials._social-links')
+                        </div>
+
                     </form>
                 </div>
             </div>

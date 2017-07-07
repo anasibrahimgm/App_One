@@ -28,3 +28,42 @@
 Application Name in .env
   APP_NAME=App_One
   APP_URL=http://one.app
+
+
+007.
+    create fb, twitter and gitHub apps
+
+    https://github.com/laravel/socialite
+    composer require laravel/socialite
+
+    in config/app.php:
+
+      'providers' => [
+        // Other service providers...
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        ],
+
+      'aliases' => [
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+      ],
+
+    in config/services.php:
+
+      'facebook' => [
+          'client_id' => '410148912712065',
+          'client_secret' => '3eef54470d0fcd7bbbab2aa81097fe00',
+          'redirect' => 'http://one.app/auth/facebook/callback',
+      ],
+      n repeat for twitter & gitHub
+
+    php artisan make:model Provider --migration
+    //Created Migration: 2017_06_19_011251_create_providers_table
+
+    php artisan make:controller AuthProvidersController
+
+    //user clicks on login with fb
+    //go to fb
+    //fb asks if user wants to authorize the website
+    //user says ok
+    //fb sends the website back an access token
+    //the website can access user info with the access token
