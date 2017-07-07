@@ -1,13 +1,9 @@
-.social-links {
-  padding-top: 10px;
+body {
+  background-color: #F4F4EF;
 }
 
-.social-links span {
-  color: #333333;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  float: right;
+.social-links {
+  padding-top: 10px;
 }
 
 .social-links .links {
@@ -17,17 +13,68 @@
 
 .social-links i {
   color: #ccc;
-  padding-right: 80px;
+  padding-right: 40px;
+  padding-left: 40px;
 }
 
-.social-links .fa-facebook:hover{
+.social-links .fa-facebook{
+  padding-left: 0 !important;
+}
+
+.social-links .fa-facebook:hover {
   color: #3B5998;
 }
 
-.social-links .fa-twitter:hover{
+.social-links .fa-twitter:hover {
   color: #1DA1F2;
 }
 
-.social-links .fa-github:hover{
+.social-links .fa-github:hover {
   color: #222222;
+}
+
+.tab-content {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.myTabs {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width:430px;
+  box-shadow: 0 0 14px 6px rgba(0,0,0,.075);
+}
+
+.myUl {
+  margin-right: -15px !important;
+  margin-left: -15px !important;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 1px;
+}
+.myUl li {
+  text-align: center;
+}
+.myUl a{
+  border-top:0  !important;
+  border-radius: 0 !important;
+  border-bottom-color: transparent !important;
+}
+
+.login input ,
+.register input {
+  border-radius: 0 !important;
+}
+
+.loginLi a {
+  border-left: none !important;
+  color: #555 !important;
+}
+
+.registerLi a {
+  border-right: none !important;
+  color: #555 !important;
+}
+
+.active a{
+  color: #337ab7 !important;
 }

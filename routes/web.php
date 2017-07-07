@@ -32,3 +32,11 @@ Route::get('auth/{provider}/callback', 'AuthProvidersController@handleProviderCa
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/login', function () {
+  return view('auth.sign');
+})->name('login');
+
+Route::get('/register', function () {
+  return view('auth.sign');
+})->name('register');
