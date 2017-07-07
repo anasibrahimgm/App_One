@@ -1,2 +1,22 @@
 001.
    php artisan make:auth
+
+003.
+    https://github.com/bestmomo/laravel-email-confirmation
+    composer require bestmomo/laravel-email-confirmation
+    config/app.php :
+       Bestmomo\LaravelEmailConfirmation\ServiceProvider::class,
+
+       Make a migration to add columns to users table :
+         php artisan migrate
+
+         LoginController :
+           use Bestmomo\LaravelEmailConfirmation\Traits\AuthenticatesUsers;
+
+         RegisterController :
+           use Bestmomo\LaravelEmailConfirmation\Traits\RegistersUsers;
+
+         ResetPasswordController:
+           use Bestmomo\LaravelEmailConfirmation\Traits\ResetsPasswords;
+
+         php artisan confirmation:auth

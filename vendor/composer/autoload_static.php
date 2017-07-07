@@ -89,6 +89,10 @@ class ComposerStaticInit66f034739f075888bd53a3f563d53b36
             'Cron\\' => 5,
             'Carbon\\' => 7,
         ),
+        'B' => 
+        array (
+            'Bestmomo\\LaravelEmailConfirmation\\' => 34,
+        ),
         'A' => 
         array (
             'App\\' => 4,
@@ -226,6 +230,10 @@ class ComposerStaticInit66f034739f075888bd53a3f563d53b36
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
+        'Bestmomo\\LaravelEmailConfirmation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
@@ -279,6 +287,7 @@ class ComposerStaticInit66f034739f075888bd53a3f563d53b36
         'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
@@ -290,6 +299,13 @@ class ComposerStaticInit66f034739f075888bd53a3f563d53b36
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Commands\\AuthCommand' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Commands/AuthCommand.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Commands\\NotificationCommand' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Commands/NotificationCommand.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Notifications\\ConfirmEmail' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Notifications/ConfirmEmail.php',
+        'Bestmomo\\LaravelEmailConfirmation\\ServiceProvider' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/ServiceProvider.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Traits\\AuthenticatesUsers' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Traits/AuthenticatesUsers.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Traits\\RegistersUsers' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Traits/RegistersUsers.php',
+        'Bestmomo\\LaravelEmailConfirmation\\Traits\\ResetsPasswords' => __DIR__ . '/..' . '/bestmomo/laravel-email-confirmation/src/Traits/ResetsPasswords.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonInterval' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonInterval.php',
         'Carbon\\Exceptions\\InvalidDateException' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Exceptions/InvalidDateException.php',

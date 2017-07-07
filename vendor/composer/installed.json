@@ -3466,5 +3466,46 @@
             "testing",
             "xunit"
         ]
+    },
+    {
+        "name": "bestmomo/laravel-email-confirmation",
+        "version": "V1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/bestmomo/laravel-email-confirmation.git",
+            "reference": "a8a5cbc5d369734ac5fc81043c12fe7664a777f5"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/bestmomo/laravel-email-confirmation/zipball/a8a5cbc5d369734ac5fc81043c12fe7664a777f5",
+            "reference": "a8a5cbc5d369734ac5fc81043c12fe7664a777f5",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/support": "~5.4",
+            "php": ">=5.6.4"
+        },
+        "time": "2017-02-05T12:13:22+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Bestmomo\\LaravelEmailConfirmation\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Bestmomo",
+                "email": "grandheretique@free.fr",
+                "homepage": "http://laravel.sillo.org"
+            }
+        ],
+        "description": "Email address confirmation with Laravel",
+        "homepage": "http://github.com/laravel-email-confirmation"
     }
 ]
