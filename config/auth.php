@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'users',//should i change 'users' to 'users_one' bc i changed the table_name?!
     ],
 
     /*
