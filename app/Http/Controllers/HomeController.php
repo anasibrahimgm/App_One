@@ -23,15 +23,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        if(session('intendedRoute'))
-        {
-          $my_route = session('intendedRoute');
-          session()->forget('intendedRoute');
-
-          return redirect()->route($my_route);
-        }
-        
+    {              
         return view('home');
     }
 }

@@ -10,6 +10,11 @@ use Storage;
 
 class ProfilesController extends Controller
 {
+    public function __construct ()
+    {
+      $this->middleware('auth')->except('show');
+    }
+
     public function show($id)//show profile
     {
         $user = User::find($id);
@@ -18,11 +23,7 @@ class ProfilesController extends Controller
 
     public function edit()//edit Profile//only profile owner
     {
-        if (Auth::check()) {
-          return view('profiles.edit');
-        }
-        session()->put('intendedRoute', 'editProfile');
-        return redirect()->route('login');//if not a logged-in user
+        return view('profiles.edit');
     }
 
     public function update(Request $request)
@@ -52,11 +53,11 @@ class ProfilesController extends Controller
       }
 
       if ($user->username != $request->username) {
-          $this->validate($request,['username' => 'unique:users_one']);
+          $this->validate($request,['username' => 'unique:one_users']);
         }
 
       if ($user->email !== $request->email) {
-        $this->validate($request,['email' => 'unique:users_one']);
+        $this->validate($request,['email' => 'unique:one_users']);
         $user->confirmed = false;
         $user->confirmation_code = str_random(30);
         $userLogout = true;
