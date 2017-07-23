@@ -80,3 +80,8 @@ Application Name in .env
 
 
     composer require "laravelcollective/html":"^5.4.0"
+
+016.
+
+CHANGE EMAIL CONTENT
+  /vendor/laravel/framework/src/Illuminate/Mail/resources/views/html

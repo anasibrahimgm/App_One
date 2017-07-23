@@ -60,6 +60,21 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest(route('login'));
+        //if we requested app-link/admin when we are logged out, we get user login page not admin login page
+        $guard = array_get($exception->guards(), 0);
+        //0: the 1st item
+        // we get 'web', 'api', 'admin' or 'admin-api'
+
+        switch ($guard) {
+          case 'admin':
+            $login = 'admin.showLogin';
+            break;
+
+          default: // 'web' in this case
+            $login = 'login';
+            break;
+        }
+
+        return redirect()->guest(route($login));
     }
 }

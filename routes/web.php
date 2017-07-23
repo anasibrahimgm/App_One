@@ -37,7 +37,28 @@ Route::get('/login', 'Auth\LoginController@getLogin')->name('login');
 
 Route::get('/register', 'Auth\RegisterController@getRegister')->name('register');
 
-Route::get('users/{id}', 'ProfilesController@show')->name('users.show');
+Route::get('users/{username}', 'ProfilesController@show')->name('users.show');
 Route::get('editprofile', 'ProfilesController@edit')->name('editProfile');
 Route::put('updateProfile', 'ProfilesController@update')->name('updateProfile');
 Route::delete('deleteProfile', 'ProfilesController@destroy')->name('deleteProfile');
+
+Route::resource('posts', 'PostsController');
+
+// if we wanted to logOut only admins
+Route::post('user/logout', 'Auth\LoginController@userLogout')->name('logout');
+
+Route::prefix('/admin')->group(function(){
+  Route::get('/', 'AdminController@index')->name('admin.dashboard');
+  Route::get('/login', 'Auth\AdminLoginController@showLogin')->name('admin.showLogin');
+  Route::post('/login', 'Auth\AdminLoginController@login')->name('admin.login');
+  // if we wanted to logOut only admins
+  Route::post('/logout', 'Auth\AdminLoginController@logout')->name('admin.logout');
+
+  Route::prefix('/password')->group(function() {
+    Route::get('reset', 'Auth\AdminForgotPasswordController@showLinkRequestForm')->name('admin.password.request');
+    Route::post('email', 'Auth\AdminForgotPasswordController@sendResetLinkEmail')->name('admin.password.email');
+    Route::get('reset/{token}', 'Auth\AdminResetPasswordController@showResetForm')->name('admin.password.reset');
+    Route::post('reset', 'Auth\AdminResetPasswordController@reset');
+  });
+
+});
