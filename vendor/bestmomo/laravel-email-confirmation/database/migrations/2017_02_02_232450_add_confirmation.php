@@ -13,7 +13,7 @@ class AddConfirmation extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('one_users', function (Blueprint $table) {
             $table->boolean('confirmed')->default(false);
             $table->string('confirmation_code')->nullable();
         });
@@ -26,7 +26,7 @@ class AddConfirmation extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('one_users', function (Blueprint $table) {
             $table->dropColumn('confirmed');
             $table->dropColumn('confirmation_code');
         });

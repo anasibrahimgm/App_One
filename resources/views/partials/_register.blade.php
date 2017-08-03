@@ -18,11 +18,11 @@
             </div>
         </div>
 
-        <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
+        <div class="form-group{{ ( $errors->has('username') and $registerActive )? ' has-error' : '' }}">
             <div class="col-md-10 col-md-offset-1">
-                <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required autofocus placeholder="Username">
+                <input id="username" type="text" class="form-control" name="username" value="{{ $registerActive ? old('username') : "" }}" required autofocus placeholder="Username">
 
-                @if ($errors->has('username'))
+                @if ($errors->has('username') and $registerActive)
                     <span class="help-block">
                         <strong>{{ $errors->first('username') }}</strong>
                     </span>
@@ -30,11 +30,11 @@
             </div>
         </div>
 
-        <div class="form-group{{ ( $errors->has('email') and $registerActive ) ? ' has-error' : '' }}">
+        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
             <div class="col-md-10 col-md-offset-1">
-                <input id="email" type="email" class="form-control" name="email" value="{{ $registerActive ? old('email') : "" }}" required placeholder="E-Mail Address">
+                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required placeholder="E-Mail Address">
 
-                @if ($errors->has('email') and $registerActive)
+                @if ($errors->has('email'))
                     <span class="help-block">
                         <strong>{{ $errors->first('email') }}</strong>
                     </span>

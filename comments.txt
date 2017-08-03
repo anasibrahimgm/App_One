@@ -85,3 +85,19 @@ Application Name in .env
 
 CHANGE EMAIL CONTENT
   /vendor/laravel/framework/src/Illuminate/Mail/resources/views/html
+
+017.
+  https://www.tinymce.com
+
+  menubar:false
+
+  we can customize the menu
+    menu: {
+      view: {title: Edit, item: 'cut, copy, paste'}
+    }
+
+  when we show the posts from the db , we get the html code of the input data by the editor
+
+  composer require mews/purifier
+  https://github.com/mewebstudio/purifier
+  php artisan vendor:publish --provider="Mews\Purifier\PurifierServiceProvider"

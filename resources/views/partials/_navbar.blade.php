@@ -18,7 +18,7 @@
           </button>
 
           <a class="navbar-brand" href="{{ url('/') }}">
-              {{ config('app.name', 'Laravel') }}
+              <i class="fa fa-home fa-lg" aria-hidden="true"></i> {{ config('app.name', 'Laravel') }}
           </a>
       </div>
 
@@ -36,27 +36,25 @@
                   <li><a href="{{ route('login') }}">Login</a></li>
                   <li><a href="{{ route('register') }}">Register</a></li>
               @else
+                  <li><a id="currentUser_data" href="{{ route('users.show', Auth::user()->username ) }}"><img  src="{{asset('images/users/avatars/')}}/{{ Auth::user()->avatar }}" /><span id="currentUser_name"> {{ explode(" ", Auth::user()->name)[0]}}</span></a></li>
                   <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                          {{ Auth::user()->name }} <span class="caret"></span>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                          <span class="caret"></span>
                       </a>
 
                       <ul class="dropdown-menu" role="menu">
                           <li>
-                            <a href="{{ route('users.show', Auth::id() ) }}">Profile</a>
+                            <a href="{{ route('editProfile') }}"><i class="fa fa-cog fa-lg" aria-hidden="true"></i> Edit Profile</a>
                           </li>
 
                           <li>
-                            <a href="{{ route('editProfile') }}">Edit Profile</a>
-                          </li>
-                          <li>
-                              <a href="{{ route('logout') }}"
+                              <a href="{{ Auth::guard('admin')->check() ? route('admin.logout') : route('logout') }}"
                                   onclick="event.preventDefault();
                                            document.getElementById('logout-form').submit();">
-                                  Logout
+                                  <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout
                               </a>
 
-                              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                              <form id="logout-form" action="{{ Auth::guard('admin')->check() ? route('admin.logout') : route('logout') }}" method="POST" style="display: none;">
                                   {{ csrf_field() }}
                               </form>
                           </li>

@@ -17,7 +17,7 @@
 
             <br />
             {{ Form::label('avatar', 'Change Profile Picture') }}
-            {{ Form::file('avatar', ['class' => 'form-control-file', 'id' => 'avatar', 'value' => 'osama']) }}
+            {{ Form::file('avatar', ['class' => 'form-control-file', 'id' => 'avatar']) }}
             @if ($errors->has('avatar'))
             <span class="help-block danger">
               <strong>{{ $errors->first('avatar') }}</strong>

@@ -23,5 +23,7 @@
 
     <!-- Scripts -->
     @include('../partials._javascript')
+
+    @yield('scripts')
 </body>
 </html>

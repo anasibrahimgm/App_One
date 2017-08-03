@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Provider extends Model
 {
-  protected $table = 'providers_one';
+  protected $table = 'one_providers';
 
 }

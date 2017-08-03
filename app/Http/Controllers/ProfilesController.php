@@ -7,6 +7,8 @@ use App\User;
 use Auth;
 use Image;
 use Storage;
+use App\Post;
+use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfilesController extends Controller
 {
@@ -15,10 +17,11 @@ class ProfilesController extends Controller
       $this->middleware('auth')->except('show');
     }
 
-    public function show($id)//show profile
+    public function show($username)//show profile
     {
-        $user = User::find($id);
-        return view('profiles.show')->withUser($user);
+        $user = User::where('username', $username)->first();
+        //$posts = Post::where('user_id', $user->id)->get();
+        return view('profiles.show')->withUser($user);//->withPosts($posts);
     }
 
     public function edit()//edit Profile//only profile owner
@@ -26,18 +29,24 @@ class ProfilesController extends Controller
         return view('profiles.edit');
     }
 
-    public function update(Request $request)
+    public function change(Request $request)
+    {
+      $user = User::find(Auth::id());
+      $user->name = $request->name;
+      //$user->bio = $request->bio;
+
+      $user->save();
+
+      return response()->json(['user' => $user], 200);
+    }
+
+    public function update(ProfileUpdateRequest $request)
     {
       $user = User::find(Auth::id());
 
       $userLogout = false;
 
-      $this->validate($request, [
-          'name' => 'required|string|max:255',
-          'username' => 'required|string|alpha_dash|max:255',
-          'email' => 'required|string|email|max:255',
-          'avatar' => 'sometimes|image',
-      ]);
+      // User Avatar
 
       if ($request->hasFile('avatar')) {
         $image = $request->file('avatar');
@@ -52,16 +61,15 @@ class ProfilesController extends Controller
         $user->avatar = $fileName;
       }
 
-      if ($user->username != $request->username) {
-          $this->validate($request,['username' => 'unique:one_users']);
-        }
+      // Email Change
 
       if ($user->email !== $request->email) {
-        $this->validate($request,['email' => 'unique:one_users']);
         $user->confirmed = false;
         $user->confirmation_code = str_random(30);
         $userLogout = true;
       }
+
+      // Password Change
 
       if ($request->password) {
           $this->validate($request,['password' => 'string|min:6|confirmed']);
@@ -77,13 +85,15 @@ class ProfilesController extends Controller
 
       $user->save();
 
+      // Log out the user if email changed
+
       if ($userLogout) {
         Auth::logout();
         $request->session()->put('user_id', $user->id);//@ vendor/bestmomo/laravel-email-confirmation/src/Traits/AuthenticatesUsers.php, function:login,  line:51
-        $request->session()->put('email-change-success', 'Email successfully changed, please check your email to confirm');
+        $request->session()->put('email-change-success', 'Email successfully changed, please check your email to confirm');//we should use flash() instead of put() here bc it will only be available during the subsequent HTTP request, and then will be deleted
         return redirect()->route('confirmation.resend');
       } else {
-        return redirect()->route('users.show', Auth::user());
+        return redirect()->route('users.show', $user->username);
       }
     }
 

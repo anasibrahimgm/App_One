@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_one', function (Blueprint $table) {
+        Schema::create('one_users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('username')->unique()->nullable();
@@ -22,9 +22,10 @@ class CreateUsersTable extends Migration
             //$table->string('phone')->unique()->nullable();
             $table->string('password')->nullable();//nullable for providers
             $table->string('avatar')->default('avatar.png');
-            $table->integer('posts')->default(0);
-            $table->integer('comments')->default(0);
-            $table->integer('replies')->default(0);
+            $table->integer('posts_no')->default(0);
+            $table->integer('comments_no')->default(0);
+            $table->integer('replies_no')->default(0);
+            //enum:active/ unactive
             $table->rememberToken();
             $table->timestamps();
         });
@@ -37,6 +38,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_one');
+        Schema::dropIfExists('one_users');
     }
 }

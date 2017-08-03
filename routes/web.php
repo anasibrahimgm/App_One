@@ -40,9 +40,11 @@ Route::get('/register', 'Auth\RegisterController@getRegister')->name('register')
 Route::get('users/{username}', 'ProfilesController@show')->name('users.show');
 Route::get('editprofile', 'ProfilesController@edit')->name('editProfile');
 Route::put('updateProfile', 'ProfilesController@update')->name('updateProfile');
+Route::put('changeProfile', 'ProfilesController@change');
 Route::delete('deleteProfile', 'ProfilesController@destroy')->name('deleteProfile');
 
 Route::resource('posts', 'PostsController');
+Route::get('userPosts/{user_id}', 'PostsController@userPosts');
 
 // if we wanted to logOut only admins
 Route::post('user/logout', 'Auth\LoginController@userLogout')->name('logout');
@@ -62,3 +64,10 @@ Route::prefix('/admin')->group(function(){
   });
 
 });
+
+Route::get('anas', function() {
+  return view('posts.create');
+});
+
+
+Route::post('test', 'PostsController@test');

@@ -20,13 +20,13 @@
 <form class="form-horizontal login" role="form" method="POST" action="{{ url('/login') }}">
     {{ csrf_field() }}
 
-    <div class="form-group{{ ( $errors->has('email') and !$registerActive ) ? ' has-error' : '' }}">
+    <div class="form-group{{ ( $errors->has('username') and !$registerActive ) ? ' has-error' : '' }}">
         <div class="col-md-10 col-md-offset-1">
-            <input id="email" type="email" class="form-control" name="email" value="{{ !$registerActive ? old('email') : "" }}" required autofocus placeholder="Email Address">
+            <input id="username" type="text" class="form-control" name="username" value="{{ !$registerActive ? old('username') : "" }}" required autofocus placeholder="Username">
 
-            @if ($errors->has('email') and !$registerActive)
+            @if ($errors->has('username') and !$registerActive)
                 <span class="help-block">
-                    <strong>{{ $errors->first('email') }}</strong>
+                    <strong>{{ $errors->first('username') }}</strong>
                 </span>
             @endif
         </div>
