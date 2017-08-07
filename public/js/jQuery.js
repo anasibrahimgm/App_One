@@ -39,11 +39,4 @@ $(function () {
       'width': x,
     });
 
-    var imgUrl = $('#profile-img-edit').attr('src');
-    imgUrl = "url(" + imgUrl + ")";
-
-  $('.basicInfo-left-edit').css({
-    'backgroundImage': imgUrl,
-  });
-
 });

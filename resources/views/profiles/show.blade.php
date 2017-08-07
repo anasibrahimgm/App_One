@@ -7,7 +7,7 @@
   :profile-user='{!! $user->toJson() !!}'
   @if (Auth::check())
     :current-user='{!! Auth::user()->toJson() !!}'
-  @endunless
+  @endif
   >
 </user-profile>
 @endsection

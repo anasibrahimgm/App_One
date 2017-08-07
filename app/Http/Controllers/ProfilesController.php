@@ -29,72 +29,71 @@ class ProfilesController extends Controller
         return view('profiles.edit');
     }
 
-    public function change(Request $request)
-    {
-      $user = User::find(Auth::id());
-      $user->name = $request->name;
-      //$user->bio = $request->bio;
-
-      $user->save();
-
-      return response()->json(['user' => $user], 200);
-    }
-
-    public function update(ProfileUpdateRequest $request)
+    public function update(Request $request)
     {
       $user = User::find(Auth::id());
 
       $userLogout = false;
 
-      // User Avatar
+      if ($request->has('name'))
+          $user->name = $request->name;
 
-      if ($request->hasFile('avatar')) {
-        $image = $request->file('avatar');
-        $fileName = time(). '.' . $image->getClientOriginalExtension();// we can use  $image->encode('png');
-        $location = public_path('images/users/avatars/' . $fileName);// storage path
-        Image::make($image)->resize(200, 200)->save($location);
+      if ($request->has('bio'))
+          $user->bio = $request->bio;
 
-        if ($user->avatar != "avatar.png") {//delete the old image if existed
+
+      if ($request->has('avatar')) {
+        if($user->avatar != $request->avatar) {
+          $exploded = explode(",", $request->avatar);
+
+          $decoded = base64_decode($exploded[1]);
+
+          if(str_contains($exploded[0], 'jpeg'))
+            $extension = 'jpg';
+          else
+            $extension = 'png';
+
+          $fileName = time(). '.' . $extension;
+          $location = public_path('images/users/avatars/' . $fileName);// storage path
+
+          Image::make($decoded)->save($location);
+
           Storage::delete('images/users/avatars/' . $user->avatar);
+
+          $user->avatar = $fileName;
         }
-
-        $user->avatar = $fileName;
       }
 
-      // Email Change
+      if ($request->has('username'))
+          $user->username = $request->username;
 
-      if ($user->email !== $request->email) {
-        $user->confirmed = false;
-        $user->confirmation_code = str_random(30);
-        $userLogout = true;
+      if ($request->has('email')) {
+        if ($user->email !== $request->email) {
+          $user->confirmed = false;
+          $user->confirmation_code = str_random(30);
+          $userLogout = true;
+
+          $user->email = $request->email;
+        }
       }
 
-      // Password Change
-
-      if ($request->password) {
-          $this->validate($request,['password' => 'string|min:6|confirmed']);
+      if ($request->has('password')) {
+        if ($request->password != '')
           $user->password = bcrypt($request->password);
-        }
-
-      $user->name = $request->name;
-      $user->email = $request->email;
-      $user->username = $request->username;
-
-      if ($request->bio)
-        $user->bio = $request->bio;
+      }
 
       $user->save();
-
-      // Log out the user if email changed
 
       if ($userLogout) {
         Auth::logout();
         $request->session()->put('user_id', $user->id);//@ vendor/bestmomo/laravel-email-confirmation/src/Traits/AuthenticatesUsers.php, function:login,  line:51
         $request->session()->put('email-change-success', 'Email successfully changed, please check your email to confirm');//we should use flash() instead of put() here bc it will only be available during the subsequent HTTP request, and then will be deleted
-        return redirect()->route('confirmation.resend');
+        return response()->json(['user' => $user, 'redirect' => route('confirmation.resend')], 200);
       } else {
-        return redirect()->route('users.show', $user->username);
+        return response()->json(['user' => $user], 200);
       }
+
+
     }
 
     public function destroy()//delete profile

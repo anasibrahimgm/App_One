@@ -1,31 +1,37 @@
 <template>
   <div class="user-basicInfo">
     <div class="basicInfo-left">
-      <!--img :src="user_avatar" /-->
-      <div class="post-create-img-container">
-        <img :src="user_avatar" class="post-create-img"/>
-          <div class="middle" style="top: 3%; left: 5%;">
-            <button class="btn btn-danger" >Remove Image</button>
-          </div>
+      <img v-show="!owner" :src="user_avatar" style="height: 160px;"/>
+
+      <div v-show="owner" class="profile-change-img-container">
+          <img :src="user_avatar" class="profile-change-img" style="height: 160px;"/>
+
+          <input type='file' id='profile-img' style='visibility:hidden; height: 11px;' @change="changeAvatar" />
+          <label for='profile-img'>
+            <div class="middle" style="top: 12%; left: 11%;">
+              Change <i class="fa fa-pencil" aria-hidden="true"></i>
+            </div>
+          </label>
+
       </div>
     </div>
 
     <div class="basicInfo-right">
       <div class="info">
-        <span v-show="!canEditName">
-          <h3 class="userName"> {{ user_name }} <i v-show="owner" v-on:click="showEditName" class="fa fa-pencil" aria-hidden="true"></i></h3>
+        <span v-show="!showEditName">
+          <h3 class="userName"> {{ user_name_show }} <i v-show="owner" v-on:click="showEditName = true" class="fa fa-pencil" aria-hidden="true"></i></h3>
         </span>
 
-        <span v-show="canEditName">
-          <input type="text" v-model="user_name" v-on:keyup.enter="editName" v-on:keyup.esc="cancelEditName" class="form-control userName userNameEdit"/>
+        <span v-show="showEditName">
+          <input type="text" v-model="user_name" v-on:keyup.enter="editName" v-on:keyup.esc="showEditName = false" class="form-control userName userNameEdit"/>
         </span>
 
-        <span v-show="!canEditBio">
-          <p class="userBio"> {{ user.bio }} <i v-show="owner" v-on:click="showEditBio" class="fa fa-pencil" aria-hidden="true"></i></p>
+        <span v-show="!showEditBio">
+          <p class="userBio"> {{ user_bio_show }} <i v-show="owner" v-on:click="showEditBio = true" class="fa fa-pencil" aria-hidden="true"></i></p>
         </span>
 
-        <span v-show="canEditBio">
-          <textarea class="form-control userBio userBioEdit" rows="5" cols="40" placeholder="Bio" v-model="user_bio">
+        <span v-show="showEditBio">
+          <textarea class="form-control userBio userBioEdit" rows="5" cols="40" placeholder="Bio" v-model="user_bio" v-on:keyup.esc="showEditBio = false" v-on:keyup.enter="editBio">
           </textarea>
         </span>
       </div>
@@ -40,25 +46,61 @@ export default{
 
   data() {
     return {
-      user_avatar: this.user.avatar,
-      user_name: this.user.name,
-      user_bio: this.user.bio,
-
-      canEditName: false,
-      canEditBio: false,
       owner: this.own,
+
+      user_avatar: this.user.avatar,
+      user_avatar_show: this.user.avatar,
+      user_name: this.user.name,
+      user_name_show: this.user.name,
+      user_bio: this.user.bio,
+      user_bio_show: this.user.bio,
+
+      showEditName: false,
+      showEditBio: false,
     }
   },
 
   methods: {
-    showEditName() {
-      this.canEditName = true;
+    changeAvatar(e) {
+      var fileReader = new FileReader();
+      fileReader.readAsDataURL(e.target.files[0]);
+
+      fileReader.onload = (e) => {
+        this.user_avatar = e.target.result;
+        this.user_avatar_show = e.target.result;
+
+        axios.put("http://one.app/updateProfile", {
+          avatar: this.user_avatar,
+        })
+        .then(
+          response => {
+            console.log(response);
+          }
+        )
+        .catch(
+          error => {
+            if (error.response) {
+              console.log("Error 1");
+               console.log(error.response);
+
+             } else if (error.request) {
+               console.log("Error 2");
+               console.log(error.request);
+             } else {
+               console.log("Error 3");
+               console.log('Error', error.message);
+             }
+             console.log(error.config);
+          }
+        );
+
+      }
     },
 
     editName() {
-      console.log(this.user_name);
-      this.canEditName = false;
-      axios.put("http://one.app/changeProfile", {
+      this.showEditName = false;
+      this.user_name_show = this.user_name;
+      axios.put("http://one.app/updateProfile", {
         name: this.user_name,
       })
       .then(
@@ -68,27 +110,15 @@ export default{
       )
       .catch(
         error => {
-          console.log(error);
           if (error.response) {
             console.log("Error 1");
-             // The request was made and the server responded with a status code
-             // that falls out of the range of 2xx
-             console.log(error.response.data);
+             console.log(error.response);
 
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
            } else if (error.request) {
-             // The request was made but no response was received
-             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-             // http.ClientRequest in node.js
-             console.log("Error 4");
+             console.log("Error 2");
              console.log(error.request);
            } else {
-             // Something happened in setting up the request that triggered an Error
-             console.log("Error 5");
+             console.log("Error 3");
              console.log('Error', error.message);
            }
            console.log(error.config);
@@ -96,30 +126,39 @@ export default{
       );
     },
 
-    cancelEditName() {
-      this.canEditName = false;
-    },
-
-    showEditBio() {
-      this.canEditBio = true;
-    },
-
     editBio() {
+      this.showEditBio = false;
+      this.user_bio_show = this.user_bio;
+      axios.put("http://one.app/updateProfile", {
+        bio: this.user_bio,
+      })
+      .then(
+        response => {
+          console.log(response);
+        }
+      )
+      .catch(
+        error => {
+          if (error.response) {
+            console.log("Error 1");
+             console.log(error.response);
 
-    },
-
-    cancelEditBio() {
-      this.canEditBio = false;
+           } else if (error.request) {
+             console.log("Error 2");
+             console.log(error.request);
+           } else {
+             console.log("Error 3");
+             console.log('Error', error.message);
+           }
+           console.log(error.config);
+        }
+      );
     },
   },
 
   created() {
-      console.log(this.user);
-    //if (this.usertype === 'owner') {
-      //this.owner = true;
-    //}
 
-  }
+  },
 
 }
 </script>

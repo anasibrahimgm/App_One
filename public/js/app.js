@@ -878,9 +878,9 @@ module.exports = Cancel;
 var disposed = false
 var Component = __webpack_require__(2)(
   /* script */
-  __webpack_require__(49),
+  __webpack_require__(46),
   /* template */
-  __webpack_require__(50),
+  __webpack_require__(47),
   /* styles */
   null,
   /* scopeId */
@@ -916,7 +916,7 @@ module.exports = Component.exports
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(12);
-module.exports = __webpack_require__(52);
+module.exports = __webpack_require__(55);
 
 
 /***/ }),
@@ -931,12 +931,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_userProfile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_userProfile_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_userData_vue__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_userData_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_userData_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_createPost_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_postContent_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_navbar_vue__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_navbar_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_navbar_vue__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -960,11 +964,15 @@ window.Vue = __webpack_require__(37);
 
 
 
+
+
 Vue.component('user-profile', __WEBPACK_IMPORTED_MODULE_1__components_userProfile_vue___default.a);
 Vue.component('user-data', __WEBPACK_IMPORTED_MODULE_2__components_userData_vue___default.a);
 Vue.component('user-posts', __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue___default.a);
 Vue.component('create-post', __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue___default.a);
 Vue.component('post-content', __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue___default.a);
+Vue.component('edit-profile', __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue___default.a);
+Vue.component('navbar', __WEBPACK_IMPORTED_MODULE_7__components_navbar_vue___default.a);
 
 var app = new Vue({
 
@@ -42262,34 +42270,426 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['user', 'own'],
 
   data: function data() {
     return {
-      user_avatar: this.user.avatar,
-      user_name: this.user.name,
-      user_bio: this.user.bio,
+      owner: this.own,
 
-      canEditName: false,
-      canEditBio: false,
-      owner: this.own
+      user_avatar: this.user.avatar,
+      user_avatar_show: this.user.avatar,
+      user_name: this.user.name,
+      user_name_show: this.user.name,
+      user_bio: this.user.bio,
+      user_bio_show: this.user.bio,
+
+      showEditName: false,
+      showEditBio: false
     };
   },
 
 
   methods: {
-    showEditName: function showEditName() {
-      this.canEditName = true;
+    changeAvatar: function changeAvatar(e) {
+      var _this = this;
+
+      var fileReader = new FileReader();
+      fileReader.readAsDataURL(e.target.files[0]);
+
+      fileReader.onload = function (e) {
+        _this.user_avatar = e.target.result;
+        _this.user_avatar_show = e.target.result;
+
+        axios.put("http://one.app/updateProfile", {
+          avatar: _this.user_avatar
+        }).then(function (response) {
+          console.log(response);
+        }).catch(function (error) {
+          if (error.response) {
+            console.log("Error 1");
+            console.log(error.response);
+          } else if (error.request) {
+            console.log("Error 2");
+            console.log(error.request);
+          } else {
+            console.log("Error 3");
+            console.log('Error', error.message);
+          }
+          console.log(error.config);
+        });
+      };
     },
     editName: function editName() {
-      console.log(this.user_name);
-      this.canEditName = false;
-      axios.put("http://one.app/changeProfile", {
+      this.showEditName = false;
+      this.user_name_show = this.user_name;
+      axios.put("http://one.app/updateProfile", {
         name: this.user_name
       }).then(function (response) {
         console.log(response);
+      }).catch(function (error) {
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response);
+        } else if (error.request) {
+          console.log("Error 2");
+          console.log(error.request);
+        } else {
+          console.log("Error 3");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    },
+    editBio: function editBio() {
+      this.showEditBio = false;
+      this.user_bio_show = this.user_bio;
+      axios.put("http://one.app/updateProfile", {
+        bio: this.user_bio
+      }).then(function (response) {
+        console.log(response);
+      }).catch(function (error) {
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response);
+        } else if (error.request) {
+          console.log("Error 2");
+          console.log(error.request);
+        } else {
+          console.log("Error 3");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    }
+  },
+
+  created: function created() {}
+});
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "user-basicInfo"
+  }, [_c('div', {
+    staticClass: "basicInfo-left"
+  }, [_c('img', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.owner),
+      expression: "!owner"
+    }],
+    staticStyle: {
+      "height": "160px"
+    },
+    attrs: {
+      "src": _vm.user_avatar
+    }
+  }), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.owner),
+      expression: "owner"
+    }],
+    staticClass: "profile-change-img-container"
+  }, [_c('img', {
+    staticClass: "profile-change-img",
+    staticStyle: {
+      "height": "160px"
+    },
+    attrs: {
+      "src": _vm.user_avatar
+    }
+  }), _vm._v(" "), _c('input', {
+    staticStyle: {
+      "visibility": "hidden",
+      "height": "11px"
+    },
+    attrs: {
+      "type": "file",
+      "id": "profile-img"
+    },
+    on: {
+      "change": _vm.changeAvatar
+    }
+  }), _vm._v(" "), _vm._m(0)])]), _vm._v(" "), _c('div', {
+    staticClass: "basicInfo-right"
+  }, [_c('div', {
+    staticClass: "info"
+  }, [_c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.showEditName),
+      expression: "!showEditName"
+    }]
+  }, [_c('h3', {
+    staticClass: "userName"
+  }, [_vm._v(" " + _vm._s(_vm.user_name_show) + " "), _c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.owner),
+      expression: "owner"
+    }],
+    staticClass: "fa fa-pencil",
+    attrs: {
+      "aria-hidden": "true"
+    },
+    on: {
+      "click": function($event) {
+        _vm.showEditName = true
+      }
+    }
+  })])]), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showEditName),
+      expression: "showEditName"
+    }]
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_name),
+      expression: "user_name"
+    }],
+    staticClass: "form-control userName userNameEdit",
+    attrs: {
+      "type": "text"
+    },
+    domProps: {
+      "value": (_vm.user_name)
+    },
+    on: {
+      "keyup": [function($event) {
+        if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
+        _vm.editName($event)
+      }, function($event) {
+        if (!('button' in $event) && _vm._k($event.keyCode, "esc", 27)) { return null; }
+        _vm.showEditName = false
+      }],
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_name = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.showEditBio),
+      expression: "!showEditBio"
+    }]
+  }, [_c('p', {
+    staticClass: "userBio"
+  }, [_vm._v(" " + _vm._s(_vm.user_bio_show) + " "), _c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.owner),
+      expression: "owner"
+    }],
+    staticClass: "fa fa-pencil",
+    attrs: {
+      "aria-hidden": "true"
+    },
+    on: {
+      "click": function($event) {
+        _vm.showEditBio = true
+      }
+    }
+  })])]), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showEditBio),
+      expression: "showEditBio"
+    }]
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_bio),
+      expression: "user_bio"
+    }],
+    staticClass: "form-control userBio userBioEdit",
+    attrs: {
+      "rows": "5",
+      "cols": "40",
+      "placeholder": "Bio"
+    },
+    domProps: {
+      "value": (_vm.user_bio)
+    },
+    on: {
+      "keyup": [function($event) {
+        if (!('button' in $event) && _vm._k($event.keyCode, "esc", 27)) { return null; }
+        _vm.showEditBio = false
+      }, function($event) {
+        if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
+        _vm.editBio($event)
+      }],
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_bio = $event.target.value
+      }
+    }
+  })])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('label', {
+    attrs: {
+      "for": "profile-img"
+    }
+  }, [_c('div', {
+    staticClass: "middle",
+    staticStyle: {
+      "top": "12%",
+      "left": "11%"
+    }
+  }, [_vm._v("\n            Change "), _c('i', {
+    staticClass: "fa fa-pencil",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  })])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-14eb8af8", module.exports)
+  }
+}
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(2)(
+  /* script */
+  __webpack_require__(45),
+  /* template */
+  __webpack_require__(48),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/userPosts.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] userPosts.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-193cf5f5", Component.options)
+  } else {
+    hotAPI.reload("data-v-193cf5f5", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__postContent_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['user', 'own'],
+
+  components: {
+    'post-content': __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default.a
+  },
+
+  data: function data() {
+    return {
+      posts: []
+    };
+  },
+
+
+  methods: {
+    onNewPost: function onNewPost(post) {
+      this.posts.unshift(post);
+    },
+    onPostDeleted: function onPostDeleted(id) {
+      var position = this.posts.findIndex(function (element) {
+        return element.id == id;
+      });
+      this.posts.splice(position, 1);
+      console.log(this.posts);
+    }
+  },
+
+  created: function created() {
+    var _this = this;
+
+    if (this.user.posts_no != 0) {
+      axios.get("http://one.app/userPosts/" + this.user.id).then(function (response) {
+        console.log(response);
+        _this.posts = response.data.posts;
+        //this.user = response.data.user;
       }).catch(function (error) {
         console.log(error);
         if (error.response) {
@@ -42316,186 +42716,313 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
         console.log(error.config);
       });
-    },
-    cancelEditName: function cancelEditName() {
-      this.canEditName = false;
-    },
-    showEditBio: function showEditBio() {
-      this.canEditBio = true;
-    },
-    editBio: function editBio() {},
-    cancelEditBio: function cancelEditBio() {
-      this.canEditBio = false;
+    } else {
+      console.log("this User has NO POSTS");
     }
-  },
-
-  created: function created() {
-    console.log(this.user);
-    //if (this.usertype === 'owner') {
-    //this.owner = true;
-    //}
   }
 });
 
 /***/ }),
-/* 43 */
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['post', 'owner', 'postOwner'],
+
+  data: function data() {
+    return {
+      postImage: ''
+    };
+  },
+
+
+  methods: {
+    deletePost: function deletePost() {
+      var _this = this;
+
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://one.app/posts/" + this.post.id).then(function (response) {
+        console.log(response);
+        _this.$emit('postDeleted', _this.post.id);
+      }).catch(function (error) {
+        console.log(error);
+        if (error.response) {
+          console.log("Error 1");
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    }
+  },
+
+  created: function created() {
+    this.post.slug = "../posts/" + this.post.slug;
+
+    if (this.post.image) this.postImage = "../images/posts/" + this.post.image;
+  }
+});
+
+/***/ }),
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "user-basicInfo"
+    staticClass: "col-md-12 post-content"
   }, [_c('div', {
-    staticClass: "basicInfo-left"
+    staticClass: "post-content-left"
   }, [_c('div', {
-    staticClass: "post-create-img-container"
+    staticClass: "post-content-left-img"
+  }, [_c('a', {
+    attrs: {
+      "href": _vm.postOwner.username
+    }
   }, [_c('img', {
-    staticClass: "post-create-img",
     attrs: {
-      "src": _vm.user_avatar
+      "src": _vm.postOwner.avatar
     }
-  }), _vm._v(" "), _vm._m(0)])]), _vm._v(" "), _c('div', {
-    staticClass: "basicInfo-right"
+  })])])]), _vm._v(" "), _c('div', {
+    staticClass: "post-content-right"
   }, [_c('div', {
-    staticClass: "info"
+    staticClass: "col-md-12 post-data-edit"
+  }, [_c('div', {
+    staticClass: "post-data-edit-left"
+  }, [_c('ul', {
+    staticClass: "post-data"
+  }, [_c('li', {
+    staticClass: "post-owner"
+  }, [_c('a', {
+    attrs: {
+      "href": _vm.postOwner.username
+    }
+  }, [_vm._v(_vm._s(_vm.postOwner.name))])]), _vm._v(" "), _c('li', {
+    staticClass: "post-time"
+  }, [_c('a', {
+    attrs: {
+      "href": _vm.post.slug
+    }
+  }, [_vm._v(_vm._s(_vm.post.created_at))])])])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.owner),
+      expression: "owner"
+    }],
+    staticClass: "post-data-edit-right"
   }, [_c('span', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (!_vm.canEditName),
-      expression: "!canEditName"
-    }]
-  }, [_c('h3', {
-    staticClass: "userName"
-  }, [_vm._v(" " + _vm._s(_vm.user_name) + " "), _c('i', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.owner),
-      expression: "owner"
-    }],
-    staticClass: "fa fa-pencil",
+    staticClass: "left",
+    on: {
+      "click": _vm.deletePost
+    }
+  }, [_c('i', {
+    staticClass: "fa fa-2x fa-trash-o",
     attrs: {
+      "title": "Delete Post",
       "aria-hidden": "true"
-    },
-    on: {
-      "click": _vm.showEditName
     }
-  })])]), _vm._v(" "), _c('span', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.canEditName),
-      expression: "canEditName"
-    }]
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.user_name),
-      expression: "user_name"
-    }],
-    staticClass: "form-control userName userNameEdit",
-    attrs: {
-      "type": "text"
-    },
-    domProps: {
-      "value": (_vm.user_name)
-    },
-    on: {
-      "keyup": [function($event) {
-        if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
-        _vm.editName($event)
-      }, function($event) {
-        if (!('button' in $event) && _vm._k($event.keyCode, "esc", 27)) { return null; }
-        _vm.cancelEditName($event)
-      }],
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.user_name = $event.target.value
-      }
+  })]), _vm._v(" "), _vm._m(0)])]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-12"
+  }, [_c('h3', [_vm._v(_vm._s(_vm.post.title))]), _vm._v(" "), _c('p', {
+    staticClass: "lead",
+    staticStyle: {
+      "font-size": "17px"
     }
-  })]), _vm._v(" "), _c('span', {
+  }, [_vm._v(_vm._s(_vm.post.body.substr(0, 250)) + "\n        ")]), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (!_vm.canEditBio),
-      expression: "!canEditBio"
+      value: (_vm.post.body.length > 250),
+      expression: "post.body.length > 250 "
     }]
-  }, [_c('p', {
-    staticClass: "userBio"
-  }, [_vm._v(" " + _vm._s(_vm.user.bio) + " "), _c('i', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.owner),
-      expression: "owner"
-    }],
-    staticClass: "fa fa-pencil",
+  }, [_vm._v("\n        ......"), _c('a', {
     attrs: {
-      "aria-hidden": "true"
-    },
-    on: {
-      "click": _vm.showEditBio
+      "href": _vm.post.slug
     }
-  })])]), _vm._v(" "), _c('span', {
+  }, [_vm._v("Continue Reading")])]), _vm._v(" "), _c('p')]), _vm._v(" "), _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (_vm.canEditBio),
-      expression: "canEditBio"
-    }]
-  }, [_c('textarea', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.user_bio),
-      expression: "user_bio"
+      value: (_vm.post.image),
+      expression: "post.image"
     }],
-    staticClass: "form-control userBio userBioEdit",
+    staticClass: "col-md-12"
+  }, [_c('a', {
     attrs: {
-      "rows": "5",
-      "cols": "40",
-      "placeholder": "Bio"
+      "href": _vm.postImage
+    }
+  }, [_c('img', {
+    staticStyle: {
+      "border-radius": "6px"
     },
-    domProps: {
-      "value": (_vm.user_bio)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.user_bio = $event.target.value
-      }
+    attrs: {
+      "src": _vm.postImage,
+      "width": "100%"
     }
   })])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "middle",
-    staticStyle: {
-      "top": "3%",
-      "left": "5%"
+  return _c('span', {
+    staticClass: "right"
+  }, [_c('i', {
+    staticClass: "fa fa-2x fa-pencil-square-o",
+    attrs: {
+      "title": "Edit Post",
+      "aria-hidden": "true"
     }
-  }, [_c('button', {
-    staticClass: "btn btn-danger"
-  }, [_vm._v("Remove Image")])])
+  })])
 }]}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-14eb8af8", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-b9d785b4", module.exports)
   }
 }
 
 /***/ }),
-/* 44 */
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('div', {
+    staticClass: "tab-pane fade in active",
+    attrs: {
+      "id": "posts"
+    }
+  }, [_c('p', {
+    staticClass: "horizontalTabSmall"
+  }, [_vm._v("Posts")]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.own),
+      expression: "own"
+    }]
+  }, [_c('p', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.user.posts_no),
+      expression: "!user.posts_no"
+    }],
+    staticClass: "lead"
+  }, [_vm._v("Create Your First Post")]), _vm._v(" "), _c('create-post', {
+    on: {
+      "newPost": function($event) {
+        _vm.onNewPost($event)
+      }
+    }
+  })], 1), _vm._v(" "), _c('p', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (!_vm.user.posts_no && !_vm.own),
+      expression: "!user.posts_no && !own"
+    }],
+    staticClass: "lead"
+  }, [_vm._v("This User has No Posts")]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-12 posts-container"
+  }, _vm._l((_vm.posts), function(post) {
+    return _c('post-content', {
+      attrs: {
+        "post": post,
+        "owner": _vm.own,
+        "postOwner": _vm.user
+      },
+      on: {
+        "postDeleted": function($event) {
+          _vm.onPostDeleted($event)
+        }
+      }
+    })
+  }))])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-193cf5f5", module.exports)
+  }
+}
+
+/***/ }),
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var Component = __webpack_require__(2)(
   /* script */
-  __webpack_require__(45),
+  __webpack_require__(50),
   /* template */
-  __webpack_require__(46),
+  __webpack_require__(51),
   /* styles */
   null,
   /* scopeId */
@@ -42527,7 +43054,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 45 */
+/* 50 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42687,7 +43214,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 46 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -42894,25 +43421,29 @@ if (false) {
 }
 
 /***/ }),
-/* 47 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(68)
+}
 var Component = __webpack_require__(2)(
   /* script */
-  __webpack_require__(48),
+  __webpack_require__(53),
   /* template */
-  __webpack_require__(51),
+  __webpack_require__(72),
   /* styles */
-  null,
+  injectStyle,
   /* scopeId */
-  null,
+  "data-v-3a6c02a8",
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/userPosts.vue"
+Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/editProfile.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] userPosts.vue: functional components are not supported with templates, they should use render functions.")}
+if (Component.options.functional) {console.error("[vue-loader] editProfile.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -42921,9 +43452,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-193cf5f5", Component.options)
+    hotAPI.createRecord("data-v-3a6c02a8", Component.options)
   } else {
-    hotAPI.reload("data-v-193cf5f5", Component.options)
+    hotAPI.reload("data-v-3a6c02a8", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42934,114 +43465,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 48 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__postContent_vue__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user', 'own'],
-
-  components: {
-    'post-content': __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default.a
-  },
-
-  data: function data() {
-    return {
-      posts: []
-    };
-  },
-
-
-  methods: {
-    onNewPost: function onNewPost(post) {
-      this.posts.unshift(post);
-    },
-    onPostDeleted: function onPostDeleted(id) {
-      var position = this.posts.findIndex(function (element) {
-        return element.id == id;
-      });
-      this.posts.splice(position, 1);
-      console.log(this.posts);
-    }
-  },
-
-  created: function created() {
-    var _this = this;
-
-    if (this.user.posts_no != 0) {
-      axios.get("http://one.app/userPosts/" + this.user.id).then(function (response) {
-        console.log(response);
-        _this.posts = response.data.posts;
-        //this.user = response.data.user;
-      }).catch(function (error) {
-        console.log(error);
-        if (error.response) {
-          console.log("Error 1");
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(error.response.data);
-
-          console.log("Error 2");
-          console.log(error.response.status);
-
-          console.log("Error 3");
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log("Error 4");
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error 5");
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-      });
-    } else {
-      console.log("this User has NO POSTS");
-    }
-  }
-});
-
-/***/ }),
-/* 49 */
+/* 53 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -43093,48 +43517,339 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['post', 'owner', 'postOwner'],
+  props: ['authUser'],
 
   data: function data() {
     return {
-      postImage: ''
+      user_avatar: this.authUser.avatar,
+      show_user_avatar: "images/users/avatars/" + this.authUser.avatar,
+      user_name: this.authUser.name,
+      user_bio: this.authUser.bio,
+      user_username: this.authUser.username,
+      user_email: this.authUser.email,
+      user_password: '',
+      user_password_confirmation: ''
     };
   },
 
 
   methods: {
-    deletePost: function deletePost() {
+    changeAvatar: function changeAvatar(e) {
       var _this = this;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://one.app/posts/" + this.post.id).then(function (response) {
+      var fileReader = new FileReader();
+      fileReader.readAsDataURL(e.target.files[0]);
+
+      fileReader.onload = function (e) {
+        _this.user_avatar = e.target.result;
+        _this.show_user_avatar = e.target.result;
+      };
+    },
+    updateProfile: function updateProfile() {
+      var _this2 = this;
+
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.put("http://one.app/updateProfile", {
+        avatar: this.user_avatar,
+        name: this.user_name,
+        bio: this.user_bio,
+        username: this.user_username,
+        email: this.user_email,
+        password: this.user_password
+      }).then(function (response) {
         console.log(response);
-        _this.$emit('postDeleted', _this.post.id);
+        _this2.user_password = '';
+        _this2.user_password_confirmation = '';
+
+        if (response.data.redirect) {
+          window.location.href = response.data.redirect;
+        }
       }).catch(function (error) {
-        console.log(error);
         if (error.response) {
           console.log("Error 1");
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.log(error.response.data);
-
-          console.log("Error 2");
-          console.log(error.response.status);
-
-          console.log("Error 3");
-          console.log(error.response.headers);
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log("Error 4");
+          console.log("Error 2");
           console.log(error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error 5");
+          console.log("Error 3");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    }
+  },
+
+  computed: {
+    confirmClass: function confirmClass() {
+      if (this.user_password != this.user_password_confirmation) {
+        return true;
+      }
+    }
+  },
+
+  created: function created() {
+    console.log(this.authUser);
+  }
+});
+
+/***/ }),
+/* 54 */,
+/* 55 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 56 */,
+/* 57 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(2)(
+  /* script */
+  __webpack_require__(67),
+  /* template */
+  __webpack_require__(66),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/navbar.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] navbar.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7c0b139a", Component.options)
+  } else {
+    hotAPI.reload("data-v-7c0b139a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('li', [_c('a', {
+    attrs: {
+      "id": "currentUser_data",
+      "href": '/users/' + _vm.user_username
+    },
+    on: {
+      "mouseover": _vm.checkData
+    }
+  }, [_c('img', {
+    attrs: {
+      "src": '../images/users/avatars/' + _vm.user_avatar
+    }
+  }), _c('span', {
+    attrs: {
+      "id": "currentUser_name"
+    }
+  }, [_vm._v(" " + _vm._s(_vm.user_name))])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-7c0b139a", module.exports)
+  }
+}
+
+/***/ }),
+/* 67 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['authUser'],
+
+  data: function data() {
+    return {
+      user_username: this.authUser.username,
+      user_avatar: this.authUser.avatar,
+      user_name: ''
+    };
+  },
+
+
+  methods: {
+    checkData: function checkData() {
+      var _this = this;
+
+      axios.put("http://one.app/updateProfile", {}).then(function (response) {
+        if (response.data.user) {
+          //console.log(response.data.user);
+          _this.user_name = response.data.user.name.split(" ")[0];
+          _this.user_username = response.data.user.username;
+          _this.user_avatar = response.data.user.avatar;
+        }
+
+        if (response.data.redirect) {
+          window.location.href = response.data.redirect;
+        }
+      }).catch(function (error) {
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response.data);
+        } else if (error.request) {
+          console.log("Error 2");
+          console.log(error.request);
+        } else {
+          console.log("Error 3");
           console.log('Error', error.message);
         }
         console.log(error.config);
@@ -43143,199 +43858,577 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   created: function created() {
-    this.post.slug = "../posts/" + this.post.slug;
-
-    if (this.post.image) this.postImage = "../images/posts/" + this.post.image;
+    this.user_name = this.authUser.name.split(" ")[0];
   }
 });
 
+/*
+<li>
+  <navbar
+    :auth-user='{!! Auth::user()->toJson() !!}'
+  ></navbar>
+</li>
+*/
+
 /***/ }),
-/* 50 */
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(69);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(70)("2eab8360", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3a6c02a8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3a6c02a8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(57)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.red[data-v-3a6c02a8] {\n  color: #C9302C;\n  background-color: rgba(169, 68, 66, 0.23);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(71)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction) {
+  isProduction = _isProduction
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[data-vue-ssr-id~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports) {
+
+/**
+ * Translates the list format produced by css-loader into something
+ * easier to manipulate.
+ */
+module.exports = function listToStyles (parentId, list) {
+  var styles = []
+  var newStyles = {}
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i]
+    var id = item[0]
+    var css = item[1]
+    var media = item[2]
+    var sourceMap = item[3]
+    var part = {
+      id: parentId + ':' + i,
+      css: css,
+      media: media,
+      sourceMap: sourceMap
+    }
+    if (!newStyles[id]) {
+      styles.push(newStyles[id] = { id: id, parts: [part] })
+    } else {
+      newStyles[id].parts.push(part)
+    }
+  }
+  return styles
+}
+
+
+/***/ }),
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "col-md-12 post-content"
-  }, [_c('div', {
-    staticClass: "post-content-left"
-  }, [_c('div', {
-    staticClass: "post-content-left-img"
-  }, [_c('a', {
-    attrs: {
-      "href": _vm.postOwner.username
-    }
-  }, [_c('img', {
-    attrs: {
-      "src": _vm.postOwner.avatar
-    }
-  })])])]), _vm._v(" "), _c('div', {
-    staticClass: "post-content-right"
-  }, [_c('div', {
-    staticClass: "col-md-12 post-data-edit"
-  }, [_c('div', {
-    staticClass: "post-data-edit-left"
-  }, [_c('ul', {
-    staticClass: "post-data"
-  }, [_c('li', {
-    staticClass: "post-owner"
-  }, [_c('a', {
-    attrs: {
-      "href": _vm.postOwner.username
-    }
-  }, [_vm._v(_vm._s(_vm.postOwner.name))])]), _vm._v(" "), _c('li', {
-    staticClass: "post-time"
-  }, [_c('a', {
-    attrs: {
-      "href": _vm.post.slug
-    }
-  }, [_vm._v(_vm._s(_vm.post.created_at))])])])]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.owner),
-      expression: "owner"
-    }],
-    staticClass: "post-data-edit-right"
-  }, [_c('span', {
-    staticClass: "left",
+  return _c('div', [_c('form', {
+    staticClass: "form-horizontal",
     on: {
-      "click": _vm.deletePost
+      "submit": function($event) {
+        $event.preventDefault();
+        _vm.updateProfile($event)
+      }
     }
-  }, [_c('i', {
-    staticClass: "fa fa-2x fa-trash-o",
-    attrs: {
-      "title": "Delete Post",
-      "aria-hidden": "true"
-    }
-  })]), _vm._v(" "), _vm._m(0)])]), _vm._v(" "), _c('div', {
-    staticClass: "col-md-12"
-  }, [_c('h3', [_vm._v(_vm._s(_vm.post.title))]), _vm._v(" "), _c('p', {
-    staticClass: "lead",
-    staticStyle: {
-      "font-size": "17px"
-    }
-  }, [_vm._v(_vm._s(_vm.post.body.substr(0, 250)) + "\n        ")]), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.post.body.length > 250),
-      expression: "post.body.length > 250 "
-    }]
-  }, [_vm._v("\n        ......"), _c('a', {
-    attrs: {
-      "href": _vm.post.slug
-    }
-  }, [_vm._v("Continue Reading")])]), _vm._v(" "), _c('p')]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.post.image),
-      expression: "post.image"
-    }],
-    staticClass: "col-md-12"
-  }, [_c('a', {
-    attrs: {
-      "href": _vm.postImage
-    }
+  }, [_c('div', {
+    staticClass: "user-basicInfo"
+  }, [_c('div', {
+    staticClass: "basicInfo-left"
+  }, [_c('div', {
+    staticClass: "basicInfo-left-edit"
+  }, [_c('div', {
+    staticClass: "profile-change-img-container"
   }, [_c('img', {
+    staticClass: "profile-change-img",
     staticStyle: {
-      "border-radius": "6px"
+      "height": "200px",
+      "width": "200px"
     },
     attrs: {
-      "src": _vm.postImage,
-      "width": "100%"
+      "src": _vm.show_user_avatar
+    }
+  }), _vm._v(" "), _c('input', {
+    staticStyle: {
+      "visibility": "hidden",
+      "height": "11px"
+    },
+    attrs: {
+      "type": "file",
+      "id": "profile-img"
+    },
+    on: {
+      "change": _vm.changeAvatar
+    }
+  }), _vm._v(" "), _vm._m(0)])])]), _vm._v(" "), _c('div', {
+    staticClass: "basicInfo-right"
+  }, [_c('div', {
+    staticClass: "info"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_name),
+      expression: "user_name"
+    }],
+    staticClass: "form-control userName userNameEdit",
+    attrs: {
+      "id": "editName",
+      "required": "",
+      "placeholder": "Name",
+      "type": "text"
+    },
+    domProps: {
+      "value": (_vm.user_name)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_name = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_bio),
+      expression: "user_bio"
+    }],
+    staticClass: "form-control userBio userBioEdit",
+    attrs: {
+      "rows": "5",
+      "cols": "40",
+      "placeholder": "Bio"
+    },
+    domProps: {
+      "value": (_vm.user_bio)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_bio = $event.target.value
+      }
+    }
+  }, [_vm._v(_vm._s(_vm.user_bio))])])])]), _vm._v(" "), _c('div', {
+    staticClass: "horizontalTab"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields"
+  }, [_vm._m(1), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields-right"
+  }, [_c('div', {
+    staticClass: "form-group"
+  }, [_c('div', {
+    staticClass: "col-md-10"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_username),
+      expression: "user_username"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "placeholder": "Username",
+      "autofocus": "",
+      "id": "username",
+      "required": "",
+      "type": "text"
+    },
+    domProps: {
+      "value": (_vm.user_username)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_username = $event.target.value
+      }
+    }
+  })])])])]), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields"
+  }, [_vm._m(2), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields-right"
+  }, [_c('div', {
+    staticClass: "form-group"
+  }, [_c('div', {
+    staticClass: "col-md-10"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_email),
+      expression: "user_email"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "placeholder": "E-Mail Address",
+      "required": "",
+      "type": "email"
+    },
+    domProps: {
+      "value": (_vm.user_email)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_email = $event.target.value
+      }
+    }
+  })])])])]), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields"
+  }, [_vm._m(3), _vm._v(" "), _c('div', {
+    staticClass: "edit_fields-right"
+  }, [_c('div', {
+    staticClass: "form-group"
+  }, [_c('div', {
+    staticClass: "col-md-10"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_password),
+      expression: "user_password"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "placeholder": "Change Password",
+      "id": "password",
+      "type": "password"
+    },
+    domProps: {
+      "value": (_vm.user_password)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_password = $event.target.value
+      }
+    }
+  })])]), _vm._v(" "), _c('div', {
+    staticClass: "form-group"
+  }, [_c('div', {
+    staticClass: "col-md-10"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.user_password_confirmation),
+      expression: "user_password_confirmation"
+    }],
+    staticClass: "form-control",
+    class: {
+      red: _vm.confirmClass
+    },
+    attrs: {
+      "placeholder": "Confirm Password Change",
+      "id": "password-confirm",
+      "type": "password"
+    },
+    domProps: {
+      "value": (_vm.user_password_confirmation)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.user_password_confirmation = $event.target.value
+      }
+    }
+  })])])])]), _vm._v(" "), _c('div', {
+    staticClass: "form-group"
+  }, [_c('div', {
+    staticStyle: {
+      "text-align": "center"
+    }
+  }, [_c('input', {
+    staticClass: "btn btn-primary btn-lg",
+    attrs: {
+      "type": "submit",
+      "value": "Save Changes",
+      "disabled": _vm.confirmClass
     }
   })])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('span', {
-    staticClass: "right"
-  }, [_c('i', {
-    staticClass: "fa fa-2x fa-pencil-square-o",
+  return _c('label', {
     attrs: {
-      "title": "Edit Post",
+      "for": "profile-img"
+    }
+  }, [_c('div', {
+    staticClass: "middle",
+    staticStyle: {
+      "top": "12%",
+      "left": "11%"
+    }
+  }, [_vm._v("\n                    Change "), _c('i', {
+    staticClass: "fa fa-pencil",
+    attrs: {
       "aria-hidden": "true"
     }
-  })])
+  })])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "edit_fields-left"
+  }, [_c('p', [_vm._v("Username:")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "edit_fields-left"
+  }, [_c('p', [_vm._v("Email:")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "edit_fields-left"
+  }, [_c('p', [_vm._v("Password:")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-b9d785b4", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-3a6c02a8", module.exports)
   }
 }
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('div', {
-    staticClass: "tab-pane fade in active",
-    attrs: {
-      "id": "posts"
-    }
-  }, [_c('p', {
-    staticClass: "horizontalTabSmall"
-  }, [_vm._v("Posts")]), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.own),
-      expression: "own"
-    }]
-  }, [_c('p', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (!_vm.user.posts_no),
-      expression: "!user.posts_no"
-    }],
-    staticClass: "lead"
-  }, [_vm._v("Create Your First Post")]), _vm._v(" "), _c('create-post', {
-    on: {
-      "newPost": function($event) {
-        _vm.onNewPost($event)
-      }
-    }
-  })], 1), _vm._v(" "), _c('p', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (!_vm.user.posts_no && !_vm.own),
-      expression: "!user.posts_no && !own"
-    }],
-    staticClass: "lead"
-  }, [_vm._v("This User has No Posts")]), _vm._v(" "), _c('div', {
-    staticClass: "col-md-12 posts-container"
-  }, _vm._l((_vm.posts), function(post) {
-    return _c('post-content', {
-      attrs: {
-        "post": post,
-        "owner": _vm.own,
-        "postOwner": _vm.user
-      },
-      on: {
-        "postDeleted": function($event) {
-          _vm.onPostDeleted($event)
-        }
-      }
-    })
-  }))])])
-},staticRenderFns: []}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-193cf5f5", module.exports)
-  }
-}
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

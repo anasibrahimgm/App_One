@@ -36,7 +36,13 @@
                   <li><a href="{{ route('login') }}">Login</a></li>
                   <li><a href="{{ route('register') }}">Register</a></li>
               @else
-                  <li><a id="currentUser_data" href="{{ route('users.show', Auth::user()->username ) }}"><img  src="{{asset('images/users/avatars/')}}/{{ Auth::user()->avatar }}" /><span id="currentUser_name"> {{ explode(" ", Auth::user()->name)[0]}}</span></a></li>
+                  @if (Request::is('editProfile'))
+                    <navbar
+                      :auth-user='{!! Auth::user()->toJson() !!}'
+                    ></navbar>
+                  @else
+                    <li><a id="currentUser_data" href="{{ route('users.show', Auth::user()->username ) }}"><img  src="{{asset('images/users/avatars/')}}/{{ Auth::user()->avatar }}" /><span id="currentUser_name"> {{ explode(" ", Auth::user()->name)[0]}}</span></a></li>
+                  @endif
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                           <span class="caret"></span>

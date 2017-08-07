@@ -20,6 +20,8 @@ import userData from './components/userData.vue'
 import profilePosts from './components/userPosts.vue'
 import createPost from './components/createPost.vue'
 import postContent from './components/postContent.vue'
+import editProfile from './components/editProfile.vue'
+import navbar from './components/navbar.vue'
 
 
 Vue.component('user-profile', userProfile);
@@ -27,6 +29,8 @@ Vue.component('user-data', userData);
 Vue.component('user-posts', profilePosts);
 Vue.component('create-post', createPost);
 Vue.component('post-content', postContent);
+Vue.component('edit-profile', editProfile);
+Vue.component('navbar', navbar);
 
 const app = new Vue({
 
