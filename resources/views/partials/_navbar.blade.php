@@ -36,7 +36,7 @@
                   <li><a href="{{ route('login') }}">Login</a></li>
                   <li><a href="{{ route('register') }}">Register</a></li>
               @else
-                  @if (Request::is('editProfile'))
+                  @if (Request::is('editProfile') || Request::is('users/'. Auth::user()->username) )
                     <navbar
                       :auth-user='{!! Auth::user()->toJson() !!}'
                     ></navbar>

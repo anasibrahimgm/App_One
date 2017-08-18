@@ -22,6 +22,7 @@ import createPost from './components/createPost.vue'
 import postContent from './components/postContent.vue'
 import editProfile from './components/editProfile.vue'
 import navbar from './components/navbar.vue'
+import editPost from './components/editPost.vue'
 
 
 Vue.component('user-profile', userProfile);
@@ -31,13 +32,8 @@ Vue.component('create-post', createPost);
 Vue.component('post-content', postContent);
 Vue.component('edit-profile', editProfile);
 Vue.component('navbar', navbar);
+Vue.component('edit-post', editPost);
 
 const app = new Vue({
-
     el: '#app',
-
-    data() {
-      return {
-      }
-    },
 });

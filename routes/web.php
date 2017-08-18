@@ -63,10 +63,3 @@ Route::prefix('/admin')->group(function(){
   });
 
 });
-
-Route::get('anas', function() {
-  return view('posts.create');
-});
-
-
-Route::post('test', 'PostsController@test');

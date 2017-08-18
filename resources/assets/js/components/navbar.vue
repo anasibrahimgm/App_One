@@ -10,7 +10,7 @@ export default {
     return {
       user_username: this.authUser.username,
       user_avatar: this.authUser.avatar,
-      user_name: '',
+      user_name: this.authUser.name.split(" ")[0],
     }
   },
 
@@ -53,7 +53,7 @@ export default {
   },
 
   created() {
-    this.user_name = this.authUser.name.split(" ")[0];
+    //this.user_name = this.authUser.name.split(" ")[0];
   },
 }
 

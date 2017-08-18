@@ -19,7 +19,7 @@ class PostsController extends Controller
 
     public function __construct ()
     {
-      $this->middleware('auth')->only(['store', 'update', 'destroy']);
+      $this->middleware('auth')->only(['store', 'edit', 'update', 'destroy']);
     }
 
     public function index()
@@ -81,6 +81,17 @@ class PostsController extends Controller
         return view('posts.show')->withPost($post);
     }
 
+    public function edit($slug)
+    {
+
+      $post = Post::where('slug', $slug)->first();
+
+      if ($post->user_id == Auth::id())
+        return view('posts.edit')->withPost($post);
+      else
+        return "You CAN'T edit a post you haven't created";
+    }
+
     public function update(PostUpdateRequest $request, $id)
     {
       $this->validate($request, [
@@ -88,27 +99,45 @@ class PostsController extends Controller
       ]);
       $post = Post::find($id);
 
-      $post->title = $request->title;
-      $post->slug = $request->slug;
-      $post->body = Purifier::clean($request->body);
+      if ($post->user_id == Auth::id())
+      {
+        $post->title = $request->title;
+        $post->slug = $request->slug;
+        $post->body = Purifier::clean($request->body);
 
-      //DELETE THE OLD IMAGE
+        $msg = 'Anas';
 
-      /*
-      if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $fileName = time(). '.' . $image->getClientOriginalExtension();// we can use  $image->encode('png');
-        $location = public_path('images/posts/' . $fileName);// storage path
-        Image::make($image)->save($location);
-        $post->image = $fileName;
+        if ($request->image != $post->image) {
+
+          if ($post->image) {// if the post had an image
+            Storage::delete("images/posts/".$post->image);
+            //delete the old image from Storage
+
+            $post->image = '';
+          }
+
+          if ($request->image) {//if there is an image in the request
+            $exploded = explode(",", $request->image);
+
+            $decoded = base64_decode($exploded[1]);
+
+            if(str_contains($exploded[0], 'jpeg'))
+              $extension = 'jpg';
+            else
+              $extension = 'png';
+
+            $fileName = time(). '.' . $extension;
+            $location = public_path('images/posts/' . $fileName);
+
+            Image::make($decoded)->save($location);
+            $post->image = $fileName;
+          }
+        }
+
+        $post->save();
+
+        return response()->json(['message' => 'Post Updated', 'post' => $post]);
       }
-      */
-
-      $post->save();
-
-      Session::flash('success', 'Post Updated');
-
-      return redirect()->route('users.show', Auth::user()->username);
     }
 
     public function destroy($id)
