@@ -25,7 +25,10 @@
               <div class="tab-content info">
                 <user-posts
                   :user="profileUser"
-                  :own="owner">
+                  :own="owner"
+                  :currentUser="currentUser"
+                  :loggedIn="loggedIn"
+                  >
                 </user-posts>
 
                 <div id="comments" class="tab-pane fade">
@@ -56,7 +59,7 @@
 import axios from 'axios';
 
 export default {
-  props: ['currentUser', 'profileUser'],
+  props: ['currentUser', 'profileUser', 'loggedIn'],
 
   data() {
     return {

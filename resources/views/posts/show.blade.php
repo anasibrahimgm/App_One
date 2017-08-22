@@ -12,6 +12,11 @@
     @else
       :owner='false'
     @endif
+
+    @if(Auth::check())
+      :current-user='{!! Auth::user()->toJson() !!}'
+      :logged-in='true'
+    @endif
     >
   </post-content>
 @endsection

@@ -42365,11 +42365,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['currentUser', 'profileUser'],
+  props: ['currentUser', 'profileUser', 'loggedIn'],
 
   data: function data() {
     return {
@@ -42450,7 +42453,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('user-posts', {
     attrs: {
       "user": _vm.profileUser,
-      "own": _vm.owner
+      "own": _vm.owner,
+      "currentUser": _vm.currentUser,
+      "loggedIn": _vm.loggedIn
     }
   }), _vm._v(" "), _c('div', {
     staticClass: "tab-pane fade",
@@ -42958,11 +42963,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['user', 'own'],
+  props: ['user', 'own', 'loggedIn', 'currentUser'],
 
   components: {
     'post-content': __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default.a
@@ -43063,7 +43070,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n.post-content .col-md-8 {\n  border: 1px solid rgba(0, 0, 255, 0.14);\n  border-radius: 5px;\n  padding: 10px;\n}\n", ""]);
+exports.push([module.i, "\n.post-content .col-md-8 {\n  border: 1px solid rgba(0, 0, 255, 0.14);\n  border-radius: 5px;\n  padding: 10px;\n}\n.commentsHorizontalTab:after {\n  content: '';\n  display: block;\n  height: 1px;\n  background-color: rgba(0, 0, 255, 0.37);\n  margin: 10px 0 0;\n}\n", ""]);
 
 // exports
 
@@ -43186,15 +43193,70 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+(function (d, s, id) {
+  var js,
+      fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s);js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.10&appId=410148912712065";
+  fjs.parentNode.insertBefore(js, fjs);
+})(document, 'script', 'facebook-jssdk');
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['post', 'owner', 'postOwner', 'completePost'],
+  props: ['post', 'owner', 'postOwner', 'completePost', 'loggedIn', 'currentUser'],
 
   data: function data() {
     return {
-      postImage: ''
+      postImage: '',
+      comment: '',
+      commentError: '',
+      comments: [],
+      tweetContent: '',
+      deletedComment: ''
     };
   },
 
@@ -43232,10 +43294,74 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
         console.log(error.config);
       });
+    },
+    submitComment: function submitComment() {
+      var _this2 = this;
+
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://one.app/comments/create", {
+        postid: this.post.id,
+        body: this.comment
+      }).then(function (response) {
+        console.log(response.data.comment);
+        _this2.comments.unshift(response.data.comment);
+      }).catch(function (error) {
+        console.log(error);
+        if (error.response) {
+          console.log("Error 1");
+          if (error.response.data.body) _this2.commentError = error.response.data.body[0];
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    },
+    deleteComment: function deleteComment(commentId) {
+      var _this3 = this;
+
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://one.app/comments/" + commentId + "/delete").then(function (response) {
+        console.log(response);
+
+        var position = _this3.comments.findIndex(function (element) {
+          return element.id == commentId;
+        });
+        _this3.comments.splice(position, 1);
+      }).catch(function (error) {
+        console.log(error);
+        if (error.response) {
+          console.log("Error 1");
+          if (error.response.data.body) _this3.commentError = error.response.data.body[0];
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
     }
   },
 
   created: function created() {
+    var _this4 = this;
+
+    this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://one.app/posts/' + this.post.slug;
     this.post.slug = "../posts/" + this.post.slug;
     this.postOwner.username = "../users/" + this.postOwner.username;
 
@@ -43244,6 +43370,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     if (this.completePost) {
       this.postOwner.avatar = "../images/users/avatars/" + this.postOwner.avatar;
     }
+
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://one.app/postcomments/" + this.post.id).then(function (response) {
+      _this4.comments = response.data.comments;
+    }).catch(function (error) {
+      if (error.response) {
+        console.log("Error 1");
+        console.log(error.response);
+
+        console.log("Error 2");
+        console.log(error.response.status);
+
+        console.log("Error 3");
+        console.log(error.response.headers);
+      } else if (error.request) {
+        console.log("Error 4");
+        console.log(error.request);
+      } else {
+        console.log("Error 5");
+        console.log('Error', error.message);
+      }
+      console.log(error.config);
+    });
   }
 });
 
@@ -43255,6 +43403,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', {
     staticClass: "col-md-12 post-content"
   }, [_c('div', {
+    attrs: {
+      "id": "fb-root"
+    }
+  }), _vm._v(" "), _c('div', {
     class: _vm.completePost ? 'col-md-8 col-md-offset-2' : ''
   }, [_c('div', {
     staticClass: "post-content-left"
@@ -43430,7 +43582,120 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "src": _vm.postImage,
       "width": "100%"
     }
-  })])])])])])])])])
+  })])])])])])]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-12"
+  }, [_c('div', {
+    staticClass: "fb-share-button",
+    attrs: {
+      "data-href": _vm.post.slug,
+      "data-layout": "button_count",
+      "data-size": "small",
+      "data-mobile-iframe": "true"
+    }
+  }, [_c('a', {
+    staticClass: "fb-xfbml-parse-ignore",
+    attrs: {
+      "target": "_blank",
+      "href": _vm.post.slug
+    }
+  }, [_vm._v("Share")])]), _vm._v(" "), _c('div', {
+    staticClass: "fb-send",
+    attrs: {
+      "data-href": _vm.post.slug
+    }
+  }), _vm._v(" "), _c('a', {
+    staticClass: "twitter-share-button",
+    staticStyle: {
+      "background-color": "#1B95E0",
+      "color": "white !important",
+      "width": "30px  !important",
+      "height": "20px !important",
+      "padding": "2px 5px",
+      "border-radius": "3px"
+    },
+    attrs: {
+      "href": 'https://twitter.com/intent/tweet?text=' + _vm.tweetContent,
+      "target": "blank"
+    }
+  }, [_c('i', {
+    staticClass: "fa fa-twitter",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }), _vm._v("Tweet")])]), _vm._v(" "), _vm._m(1), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.loggedIn),
+      expression: "loggedIn"
+    }],
+    staticClass: "col-md-12 form-input-space",
+    staticStyle: {
+      "padding": "15px"
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.comment),
+      expression: "comment"
+    }],
+    staticClass: "form-control form-title",
+    attrs: {
+      "type": "text",
+      "placeholder": "Add A Comment.."
+    },
+    domProps: {
+      "value": (_vm.comment)
+    },
+    on: {
+      "keyup": function($event) {
+        if (!('button' in $event) && _vm._k($event.keyCode, "enter", 13)) { return null; }
+        _vm.submitComment($event)
+      },
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.comment = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "help-block danger"
+  }, [_vm._v("\n        " + _vm._s(_vm.commentError) + "\n      ")])]), _vm._v(" "), _vm._l((_vm.comments), function(comment) {
+    return _c('div', {
+      staticClass: "col-md-12"
+    }, [_c('div', {
+      staticClass: "post-content-left"
+    }, [_c('img', {
+      staticStyle: {
+        "width": "50px",
+        "height": "50px"
+      },
+      attrs: {
+        "src": '../images/users/avatars/' + comment.user.avatar
+      }
+    })]), _vm._v(" "), _c('div', {
+      staticClass: "post-content-right"
+    }, [_c('h4', {
+      staticStyle: {
+        "margin-bottom": "0"
+      }
+    }, [_c('a', {
+      attrs: {
+        "href": comment.user.username
+      }
+    }, [_vm._v(_vm._s(comment.user.name))])]), _vm._v(" "), _c('p', [_vm._v(_vm._s(comment.body))]), _vm._v(" "), (_vm.currentUser.id == comment.user.id) ? _c('div', [_c('span', [_c('i', {
+      staticClass: "fa fa-2x fa-trash-o",
+      attrs: {
+        "title": "Delete Comment",
+        "aria-hidden": "true"
+      },
+      on: {
+        "click": function($event) {
+          _vm.deleteComment(comment.id)
+        }
+      }
+    })])]) : _vm._e()])])
+  })], 2)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "modal-header",
@@ -43446,6 +43711,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v("×")]), _vm._v(" "), _c('h4', {
     staticClass: "modal-title"
   }, [_vm._v("Delete?")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "col-md-12 commentsHorizontalTab"
+  }, [_c('br')])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -43503,7 +43772,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "post": post,
         "owner": _vm.own,
-        "postOwner": _vm.user
+        "postOwner": _vm.user,
+        "loggedIn": _vm.loggedIn,
+        "currentUser": _vm.currentUser
       },
       on: {
         "postDeleted": function($event) {

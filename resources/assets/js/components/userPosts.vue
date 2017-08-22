@@ -19,6 +19,8 @@
           :post="post"
           :owner="own"
           :postOwner="user"
+          :loggedIn="loggedIn"
+          :currentUser="currentUser"
           @postDeleted="onPostDeleted($event)"
           >
         </post-content>
@@ -31,7 +33,7 @@
 import postContent from './postContent.vue';
 
 export default{
-  props: ['user', 'own'],
+  props: ['user', 'own', 'loggedIn', 'currentUser'],
 
   components: {
     'post-content': postContent,

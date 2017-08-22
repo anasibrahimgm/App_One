@@ -27,7 +27,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'confirmation_code',
     ];
 
     public function posts()
@@ -35,4 +35,8 @@ class User extends Authenticatable
       return $this->hasMany('App\Post');//I first had an error bc it was App/Post not App\Post!!!
     }
 
+    public function comments()
+    {
+      return $this->hasMany('App\Comment');
+    }
 }

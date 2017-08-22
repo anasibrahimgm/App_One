@@ -7,6 +7,7 @@
   :profile-user='{!! $user->toJson() !!}'
   @if (Auth::check())
     :current-user='{!! Auth::user()->toJson() !!}'
+    :logged-in='true'
   @endif
   >
 </user-profile>

@@ -58,7 +58,8 @@ class ProfilesController extends Controller
 
           Image::make($decoded)->save($location);
 
-          Storage::delete('images/users/avatars/' . $user->avatar);
+          if ($user->avatar != 'avatar.png' || $user->avatar != 'app_one.png')
+            Storage::delete('images/users/avatars/' . $user->avatar);
 
           $user->avatar = $fileName;
         }

@@ -63,3 +63,8 @@ Route::prefix('/admin')->group(function(){
   });
 
 });
+
+Route::post('comments/create', 'CommentsController@create')->name('comments.create');
+Route::delete('comments/{id}/delete', 'CommentsController@delete')->name('comments.delete');
+
+Route::get('postcomments/{id}', 'CommentsController@showPostComments');
