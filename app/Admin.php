@@ -28,4 +28,9 @@ class Admin extends Authenticatable
         $this->notify(new AdminResetPasswordNotification($token));
     }
 
+    public function categories()
+    {
+      return $this->hasMany('App\Category');
+    }
+
 }

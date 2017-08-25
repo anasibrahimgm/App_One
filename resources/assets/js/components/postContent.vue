@@ -10,8 +10,8 @@
       </div>
           <!-- Post Content RIGHT -->
       <div class="post-content-right">
-        <div class="col-md-12 post-data-edit">
-          <div class="post-data-edit-left">
+        <div class="post-content-right-top">
+          <div class="post-top-left">
             <ul class="post-data">
               <li class="post-owner"><a :href="postOwner.username">{{ postOwner.name }}</a></li>
               <li class="post-time"><a :href="post.slug">{{ post.created_at }}</a></li>
@@ -19,7 +19,7 @@
           </div>
 
           <!-- IF owner is Auth::unser() -->
-          <div class="post-data-edit-right" v-show="owner">
+          <div class="post-top-right" v-show="owner">
             <span class="left" data-toggle="modal" :data-target="'#deleteModal' + post.id"><i title="Delete Post" class="fa fa-2x fa-trash-o" aria-hidden="true"></i></span>
 
             <div class="modal fade" :id="'deleteModal' + post.id" role="dialog">
@@ -90,24 +90,27 @@
         <br />
       </div>
 
-      <div v-show="loggedIn" class="col-md-12 form-input-space" style="padding: 15px;">
-        <input v-model="comment" v-on:keyup.enter="submitComment" type="text" class="form-control form-title" placeholder="Add A Comment.." />
+      <div v-show="loggedIn" class="col-md-12 form-input-space" style="padding: 15px;">        <input v-model="comment" v-on:keyup.enter="submitComment" type="text" class="form-control form-title" placeholder="Comment.." />
         <span class="help-block danger">
           {{ commentError }}
         </span>
       </div>
 
-      <div class="col-md-12" v-for="comment in comments">
-        <div class="post-content-left">
+      <div class="col-md-12">
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ comments.length }} Comments
+      </div>
+
+      <div class="col-md-12 comment-content" v-for="comment in comments">
+        <div class="comment-content-left">
           <img :src="'../images/users/avatars/' + comment.user.avatar" style="width: 50px; height: 50px;"/>
         </div>
-        <div class="post-content-right">
+        <div class="comment-content-middle">
           <h4 style="margin-bottom:0;"><a :href="comment.user.username">{{ comment.user.name }}</a></h4>
           <p>{{ comment.body }}</p>
+        </div>
 
-          <div v-if="currentUser.id == comment.user.id">
-            <span><i v-on:click="deleteComment(comment.id)" title="Delete Comment" class="fa fa-2x fa-trash-o" aria-hidden="true"></i></span>
-          </div>
+        <div v-if="currentUser.id == comment.user.id" class="comment-content-right">
+          <span style="padding:2px;"><i v-on:click="deleteComment(comment.id)" title="Delete Comment" class="fa fa-2x fa-trash-o" aria-hidden="true"></i></span>
         </div>
       </div>
 
@@ -191,6 +194,7 @@ export default{
       .then(
         response => {
           console.log(response.data.comment);
+          this.comment = '';
           this.comments.unshift(response.data.comment);
         }
       )
@@ -306,6 +310,68 @@ export default{
 </script>
 
 <style>
+.post-content {
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #F4F4EF;
+  border-radius: 5px;
+  padding: 0 2px 10px;
+  margin: 10px 0;
+}
+
+.post-content-left{
+  float: left;
+  width: 10%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-content-left-img {
+  padding: 5px;
+  margin-top: 4px;
+}
+
+.post-content-left img {
+  width: 95%;
+  height: 95%;
+  border-radius: 50%;
+}
+
+.post-content-right{
+  float: right;
+  width: 90%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-content-right ul  {
+  list-style: none;
+}
+
+.post-content-right-top {
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+
+.post-top-left {
+  float: left;
+  width: 85%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.post-top-right {
+  float: right;
+  width: 15%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+
 .post-content .col-md-8 {
   border: 1px solid rgba(0, 0, 255, 0.14);
   border-radius: 5px;
@@ -319,4 +385,35 @@ export default{
   background-color: rgba(0, 0, 255, 0.37);
   margin: 10px 0 0;
 }
+
+.comment-content {
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-top: 1px solid #F4F4EF;
+  margin: 10px 0;
+}
+
+.comment-content-left {
+  float: left;
+  width: 10%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.comment-content-middle {
+  float: left;
+  width: 84%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.comment-content-right{
+  float: left;
+  width: 6%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
 </style>

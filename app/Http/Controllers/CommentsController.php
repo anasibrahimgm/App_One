@@ -48,7 +48,9 @@ class CommentsController extends Controller
     public function delete($id)
     {
       $comment = Comment::find($id);
-      $comment->delete();
+
+      if (Auth::id() == $comment->user_id)
+        $comment->delete();
 
       return response()->json(['message' => 'Comment Successfully DELETED']);
     }

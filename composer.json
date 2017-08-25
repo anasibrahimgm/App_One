@@ -12,7 +12,8 @@
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "^5.4.0",
-        "mews/purifier": "^2.0"
+        "mews/purifier": "^2.0",
+        "pusher/pusher-php-server": "~2.6"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

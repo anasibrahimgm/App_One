@@ -23,6 +23,7 @@ import postContent from './components/postContent.vue'
 import editProfile from './components/editProfile.vue'
 import navbar from './components/navbar.vue'
 import editPost from './components/editPost.vue'
+import categories from './components/categories.vue'
 
 
 Vue.component('user-profile', userProfile);
@@ -33,6 +34,7 @@ Vue.component('post-content', postContent);
 Vue.component('edit-profile', editProfile);
 Vue.component('navbar', navbar);
 Vue.component('edit-post', editPost);
+Vue.component('show-categories', categories);
 
 const app = new Vue({
     el: '#app',

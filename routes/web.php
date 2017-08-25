@@ -68,3 +68,9 @@ Route::post('comments/create', 'CommentsController@create')->name('comments.crea
 Route::delete('comments/{id}/delete', 'CommentsController@delete')->name('comments.delete');
 
 Route::get('postcomments/{id}', 'CommentsController@showPostComments');
+
+Route::get('categories','CategoryController@index')->name('categories.index');
+Route::get('categories/show','CategoryController@showCategories')->name('categories.show');
+Route::post('categories/create','CategoryController@store')->name('categories.store');
+Route::put('categories/{id}/edit','CategoryController@update')->name('categories.update');
+Route::delete('categories/{id}/delete','CategoryController@destroy')->name('categories.destroy');

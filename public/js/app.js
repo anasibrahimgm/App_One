@@ -70,7 +70,7 @@
 "use strict";
 
 
-var bind = __webpack_require__(5);
+var bind = __webpack_require__(7);
 var isBuffer = __webpack_require__(21);
 
 /*global toString:true*/
@@ -500,10 +500,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(6);
+    adapter = __webpack_require__(8);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(6);
+    adapter = __webpack_require__(8);
   }
   return adapter;
 }
@@ -578,345 +578,6 @@ module.exports = defaults;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function bind(fn, thisArg) {
-  return function wrap() {
-    var args = new Array(arguments.length);
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-    return fn.apply(thisArg, args);
-  };
-};
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var utils = __webpack_require__(0);
-var settle = __webpack_require__(25);
-var buildURL = __webpack_require__(27);
-var parseHeaders = __webpack_require__(28);
-var isURLSameOrigin = __webpack_require__(29);
-var createError = __webpack_require__(7);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(30);
-
-module.exports = function xhrAdapter(config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    var requestData = config.data;
-    var requestHeaders = config.headers;
-
-    if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
-    }
-
-    var request = new XMLHttpRequest();
-    var loadEvent = 'onreadystatechange';
-    var xDomain = false;
-
-    // For IE 8/9 CORS support
-    // Only supports POST and GET calls and doesn't returns the response headers.
-    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-    if ("development" !== 'test' &&
-        typeof window !== 'undefined' &&
-        window.XDomainRequest && !('withCredentials' in request) &&
-        !isURLSameOrigin(config.url)) {
-      request = new window.XDomainRequest();
-      loadEvent = 'onload';
-      xDomain = true;
-      request.onprogress = function handleProgress() {};
-      request.ontimeout = function handleTimeout() {};
-    }
-
-    // HTTP basic authentication
-    if (config.auth) {
-      var username = config.auth.username || '';
-      var password = config.auth.password || '';
-      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
-    }
-
-    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
-
-    // Set the request timeout in MS
-    request.timeout = config.timeout;
-
-    // Listen for ready state
-    request[loadEvent] = function handleLoad() {
-      if (!request || (request.readyState !== 4 && !xDomain)) {
-        return;
-      }
-
-      // The request errored out and we didn't get a response, this will be
-      // handled by onerror instead
-      // With one exception: request that using file: protocol, most browsers
-      // will return status as 0 even though it's a successful request
-      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-        return;
-      }
-
-      // Prepare the response
-      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
-      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
-      var response = {
-        data: responseData,
-        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
-        status: request.status === 1223 ? 204 : request.status,
-        statusText: request.status === 1223 ? 'No Content' : request.statusText,
-        headers: responseHeaders,
-        config: config,
-        request: request
-      };
-
-      settle(resolve, reject, response);
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(createError('Network Error', config, null, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
-        request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Add xsrf header
-    // This is only done if running in a standard browser environment.
-    // Specifically not if we're in a web worker, or react-native.
-    if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(31);
-
-      // Add xsrf header
-      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
-          cookies.read(config.xsrfCookieName) :
-          undefined;
-
-      if (xsrfValue) {
-        requestHeaders[config.xsrfHeaderName] = xsrfValue;
-      }
-    }
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
-        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
-          // Remove Content-Type if data is undefined
-          delete requestHeaders[key];
-        } else {
-          // Otherwise add header to the request
-          request.setRequestHeader(key, val);
-        }
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (config.withCredentials) {
-      request.withCredentials = true;
-    }
-
-    // Add responseType to request if needed
-    if (config.responseType) {
-      try {
-        request.responseType = config.responseType;
-      } catch (e) {
-        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
-        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
-        if (config.responseType !== 'json') {
-          throw e;
-        }
-      }
-    }
-
-    // Handle progress if needed
-    if (typeof config.onDownloadProgress === 'function') {
-      request.addEventListener('progress', config.onDownloadProgress);
-    }
-
-    // Not all browsers support upload events
-    if (typeof config.onUploadProgress === 'function' && request.upload) {
-      request.upload.addEventListener('progress', config.onUploadProgress);
-    }
-
-    if (config.cancelToken) {
-      // Handle cancellation
-      config.cancelToken.promise.then(function onCanceled(cancel) {
-        if (!request) {
-          return;
-        }
-
-        request.abort();
-        reject(cancel);
-        // Clean up request
-        request = null;
-      });
-    }
-
-    if (requestData === undefined) {
-      requestData = null;
-    }
-
-    // Send the request
-    request.send(requestData);
-  });
-};
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var enhanceError = __webpack_require__(26);
-
-/**
- * Create an Error with the specified message, config, error code, request and response.
- *
- * @param {string} message The error message.
- * @param {Object} config The config.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- * @param {Object} [request] The request.
- * @param {Object} [response] The response.
- * @returns {Error} The created error.
- */
-module.exports = function createError(message, config, code, request, response) {
-  var error = new Error(message);
-  return enhanceError(error, config, code, request, response);
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/**
- * A `Cancel` is an object that is thrown when an operation is canceled.
- *
- * @class
- * @param {string=} message The message.
- */
-function Cancel(message) {
-  this.message = message;
-}
-
-Cancel.prototype.toString = function toString() {
-  return 'Cancel' + (this.message ? ': ' + this.message : '');
-};
-
-Cancel.prototype.__CANCEL__ = true;
-
-module.exports = Cancel;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(48)
-}
-var Component = __webpack_require__(1)(
-  /* script */
-  __webpack_require__(51),
-  /* template */
-  __webpack_require__(52),
-  /* styles */
-  injectStyle,
-  /* scopeId */
-  null,
-  /* moduleIdentifier (server only) */
-  null
-)
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/postContent.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] postContent.vue: functional components are not supported with templates, they should use render functions.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b9d785b4", Component.options)
-  } else {
-    hotAPI.reload("data-v-b9d785b4", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 11 */
 /***/ (function(module, exports) {
 
 /*
@@ -998,7 +659,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 12 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -1219,11 +880,350 @@ function applyToTag (styleElement, obj) {
 
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+var settle = __webpack_require__(25);
+var buildURL = __webpack_require__(27);
+var parseHeaders = __webpack_require__(28);
+var isURLSameOrigin = __webpack_require__(29);
+var createError = __webpack_require__(9);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(30);
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if ("development" !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(31);
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(26);
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(48)
+}
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(51),
+  /* template */
+  __webpack_require__(52),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/postContent.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] postContent.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-02c056d9", Component.options)
+  } else {
+    hotAPI.reload("data-v-02c056d9", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(14);
-module.exports = __webpack_require__(68);
+module.exports = __webpack_require__(73);
 
 
 /***/ }),
@@ -1242,7 +1242,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_createPost_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_createPost_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_postContent_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue__);
@@ -1250,6 +1250,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_navbar_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_navbar_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_editPost_vue__ = __webpack_require__(65);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_editPost_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_editPost_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_categories_vue__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_categories_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_categories_vue__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -1276,6 +1278,7 @@ window.Vue = __webpack_require__(39);
 
 
 
+
 Vue.component('user-profile', __WEBPACK_IMPORTED_MODULE_1__components_userProfile_vue___default.a);
 Vue.component('user-data', __WEBPACK_IMPORTED_MODULE_2__components_userData_vue___default.a);
 Vue.component('user-posts', __WEBPACK_IMPORTED_MODULE_3__components_userPosts_vue___default.a);
@@ -1284,6 +1287,7 @@ Vue.component('post-content', __WEBPACK_IMPORTED_MODULE_5__components_postConten
 Vue.component('edit-profile', __WEBPACK_IMPORTED_MODULE_6__components_editProfile_vue___default.a);
 Vue.component('navbar', __WEBPACK_IMPORTED_MODULE_7__components_navbar_vue___default.a);
 Vue.component('edit-post', __WEBPACK_IMPORTED_MODULE_8__components_editPost_vue___default.a);
+Vue.component('show-categories', __WEBPACK_IMPORTED_MODULE_9__components_categories_vue___default.a);
 
 var app = new Vue({
   el: '#app'
@@ -18437,7 +18441,7 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(17)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(17)(module)))
 
 /***/ }),
 /* 17 */
@@ -31118,7 +31122,7 @@ if (typeof jQuery === 'undefined') {
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(5);
+var bind = __webpack_require__(7);
 var Axios = __webpack_require__(22);
 var defaults = __webpack_require__(3);
 
@@ -31153,9 +31157,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(9);
+axios.Cancel = __webpack_require__(11);
 axios.CancelToken = __webpack_require__(37);
-axios.isCancel = __webpack_require__(8);
+axios.isCancel = __webpack_require__(10);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -31505,7 +31509,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(7);
+var createError = __webpack_require__(9);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -31924,7 +31928,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(34);
-var isCancel = __webpack_require__(8);
+var isCancel = __webpack_require__(10);
 var defaults = __webpack_require__(3);
 
 /**
@@ -32077,7 +32081,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(9);
+var Cancel = __webpack_require__(11);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -42261,7 +42265,7 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
 /* 40 */
@@ -42280,7 +42284,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/userProfile.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/userProfile.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] userProfile.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -42291,9 +42295,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-19dfe36a", Component.options)
+    hotAPI.createRecord("data-v-52bc27fe", Component.options)
   } else {
-    hotAPI.reload("data-v-19dfe36a", Component.options)
+    hotAPI.reload("data-v-52bc27fe", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42495,7 +42499,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-19dfe36a", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-52bc27fe", module.exports)
   }
 }
 
@@ -42516,7 +42520,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/userData.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/userData.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] userData.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -42527,9 +42531,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-14eb8af8", Component.options)
+    hotAPI.createRecord("data-v-8803f3b6", Component.options)
   } else {
-    hotAPI.reload("data-v-14eb8af8", Component.options)
+    hotAPI.reload("data-v-8803f3b6", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42882,7 +42886,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-14eb8af8", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-8803f3b6", module.exports)
   }
 }
 
@@ -42903,7 +42907,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/userPosts.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/userPosts.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] userPosts.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -42914,9 +42918,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-193cf5f5", Component.options)
+    hotAPI.createRecord("data-v-5479e068", Component.options)
   } else {
-    hotAPI.reload("data-v-193cf5f5", Component.options)
+    hotAPI.reload("data-v-5479e068", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -42932,7 +42936,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__postContent_vue__);
 //
 //
@@ -43046,13 +43050,13 @@ var content = __webpack_require__(49);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(12)("d982edd8", content, false);
+var update = __webpack_require__(5)("23e46480", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b9d785b4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./postContent.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b9d785b4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./postContent.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02c056d9\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./postContent.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02c056d9\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./postContent.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -43065,12 +43069,12 @@ if(false) {
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(11)(undefined);
+exports = module.exports = __webpack_require__(4)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "\n.post-content .col-md-8 {\n  border: 1px solid rgba(0, 0, 255, 0.14);\n  border-radius: 5px;\n  padding: 10px;\n}\n.commentsHorizontalTab:after {\n  content: '';\n  display: block;\n  height: 1px;\n  background-color: rgba(0, 0, 255, 0.37);\n  margin: 10px 0 0;\n}\n", ""]);
+exports.push([module.i, "\n.post-content {\n  overflow: hidden;\n  box-sizing: border-box;\n  background-color: #fff;\n  border: 1px solid #F4F4EF;\n  border-radius: 5px;\n  padding: 0 2px 10px;\n  margin: 10px 0;\n}\n.post-content-left{\n  float: left;\n  width: 10%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.post-content-left-img {\n  padding: 5px;\n  margin-top: 4px;\n}\n.post-content-left img {\n  width: 95%;\n  height: 95%;\n  border-radius: 50%;\n}\n.post-content-right{\n  float: right;\n  width: 90%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.post-content-right ul  {\n  list-style: none;\n}\n.post-content-right-top {\n  overflow: hidden;\n  box-sizing: border-box;\n  background-color: #fff;\n}\n.post-top-left {\n  float: left;\n  width: 85%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.post-top-right {\n  float: right;\n  width: 15%;\n  box-sizing: border-box;\n  overflow: hidden;\n  padding-top: 10px;\n}\n.post-content .col-md-8 {\n  border: 1px solid rgba(0, 0, 255, 0.14);\n  border-radius: 5px;\n  padding: 10px;\n}\n.commentsHorizontalTab:after {\n  content: '';\n  display: block;\n  height: 1px;\n  background-color: rgba(0, 0, 255, 0.37);\n  margin: 10px 0 0;\n}\n.comment-content {\n  overflow: hidden;\n  box-sizing: border-box;\n  background-color: #fff;\n  border-top: 1px solid #F4F4EF;\n  margin: 10px 0;\n}\n.comment-content-left {\n  float: left;\n  width: 10%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.comment-content-middle {\n  float: left;\n  width: 84%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.comment-content-right{\n  float: left;\n  width: 6%;\n  box-sizing: border-box;\n  overflow: hidden;\n  padding-top: 10px;\n}\n\n", ""]);
 
 // exports
 
@@ -43116,6 +43120,9 @@ module.exports = function listToStyles (parentId, list) {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+//
+//
+//
 //
 //
 //
@@ -43303,6 +43310,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         body: this.comment
       }).then(function (response) {
         console.log(response.data.comment);
+        _this2.comment = '';
         _this2.comments.unshift(response.data.comment);
       }).catch(function (error) {
         console.log(error);
@@ -43419,9 +43427,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   })])]), _vm._v(" "), _c('div', {
     staticClass: "post-content-right"
   }, [_c('div', {
-    staticClass: "col-md-12 post-data-edit"
+    staticClass: "post-content-right-top"
   }, [_c('div', {
-    staticClass: "post-data-edit-left"
+    staticClass: "post-top-left"
   }, [_c('ul', {
     staticClass: "post-data"
   }, [_c('li', {
@@ -43443,7 +43451,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.owner),
       expression: "owner"
     }],
-    staticClass: "post-data-edit-right"
+    staticClass: "post-top-right"
   }, [_c('span', {
     staticClass: "left",
     attrs: {
@@ -43643,7 +43651,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "form-control form-title",
     attrs: {
       "type": "text",
-      "placeholder": "Add A Comment.."
+      "placeholder": "Comment.."
     },
     domProps: {
       "value": (_vm.comment)
@@ -43660,11 +43668,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }), _vm._v(" "), _c('span', {
     staticClass: "help-block danger"
-  }, [_vm._v("\n        " + _vm._s(_vm.commentError) + "\n      ")])]), _vm._v(" "), _vm._l((_vm.comments), function(comment) {
+  }, [_vm._v("\n        " + _vm._s(_vm.commentError) + "\n      ")])]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-12"
+  }, [_c('i', {
+    staticClass: "fa fa-comments",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }), _vm._v(" " + _vm._s(_vm.comments.length) + " Comments\n    ")]), _vm._v(" "), _vm._l((_vm.comments), function(comment) {
     return _c('div', {
-      staticClass: "col-md-12"
+      staticClass: "col-md-12 comment-content"
     }, [_c('div', {
-      staticClass: "post-content-left"
+      staticClass: "comment-content-left"
     }, [_c('img', {
       staticStyle: {
         "width": "50px",
@@ -43674,7 +43689,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "src": '../images/users/avatars/' + comment.user.avatar
       }
     })]), _vm._v(" "), _c('div', {
-      staticClass: "post-content-right"
+      staticClass: "comment-content-middle"
     }, [_c('h4', {
       staticStyle: {
         "margin-bottom": "0"
@@ -43683,7 +43698,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "href": comment.user.username
       }
-    }, [_vm._v(_vm._s(comment.user.name))])]), _vm._v(" "), _c('p', [_vm._v(_vm._s(comment.body))]), _vm._v(" "), (_vm.currentUser.id == comment.user.id) ? _c('div', [_c('span', [_c('i', {
+    }, [_vm._v(_vm._s(comment.user.name))])]), _vm._v(" "), _c('p', [_vm._v(_vm._s(comment.body))])]), _vm._v(" "), (_vm.currentUser.id == comment.user.id) ? _c('div', {
+      staticClass: "comment-content-right"
+    }, [_c('span', {
+      staticStyle: {
+        "padding": "2px"
+      }
+    }, [_c('i', {
       staticClass: "fa fa-2x fa-trash-o",
       attrs: {
         "title": "Delete Comment",
@@ -43694,7 +43715,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           _vm.deleteComment(comment.id)
         }
       }
-    })])]) : _vm._e()])])
+    })])]) : _vm._e()])
   })], 2)])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
@@ -43720,7 +43741,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-b9d785b4", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-02c056d9", module.exports)
   }
 }
 
@@ -43788,7 +43809,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-193cf5f5", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-5479e068", module.exports)
   }
 }
 
@@ -43809,7 +43830,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/createPost.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/createPost.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] createPost.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -43820,9 +43841,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-9ba09342", Component.options)
+    hotAPI.createRecord("data-v-42dfcb68", Component.options)
   } else {
-    hotAPI.reload("data-v-9ba09342", Component.options)
+    hotAPI.reload("data-v-42dfcb68", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -44195,7 +44216,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-9ba09342", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-42dfcb68", module.exports)
   }
 }
 
@@ -44216,11 +44237,11 @@ var Component = __webpack_require__(1)(
   /* styles */
   injectStyle,
   /* scopeId */
-  "data-v-3a6c02a8",
+  "data-v-4276185f",
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/editProfile.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/editProfile.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] editProfile.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -44231,9 +44252,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-3a6c02a8", Component.options)
+    hotAPI.createRecord("data-v-4276185f", Component.options)
   } else {
-    hotAPI.reload("data-v-3a6c02a8", Component.options)
+    hotAPI.reload("data-v-4276185f", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -44254,13 +44275,13 @@ var content = __webpack_require__(59);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(12)("2eab8360", content, false);
+var update = __webpack_require__(5)("993578c2", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3a6c02a8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3a6c02a8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4276185f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4276185f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./editProfile.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -44273,12 +44294,12 @@ if(false) {
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(11)(undefined);
+exports = module.exports = __webpack_require__(4)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "\n.red[data-v-3a6c02a8] {\n  color: #C9302C;\n  background-color: rgba(169, 68, 66, 0.23);\n}\n", ""]);
+exports.push([module.i, "\n.red[data-v-4276185f] {\n  color: #C9302C;\n  background-color: rgba(169, 68, 66, 0.23);\n}\n", ""]);
 
 // exports
 
@@ -44716,7 +44737,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-3a6c02a8", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-4276185f", module.exports)
   }
 }
 
@@ -44737,7 +44758,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/navbar.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/navbar.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] navbar.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -44748,9 +44769,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7c0b139a", Component.options)
+    hotAPI.createRecord("data-v-5bdbd8a0", Component.options)
   } else {
-    hotAPI.reload("data-v-7c0b139a", Component.options)
+    hotAPI.reload("data-v-5bdbd8a0", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -44854,7 +44875,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-7c0b139a", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-5bdbd8a0", module.exports)
   }
 }
 
@@ -44875,7 +44896,7 @@ var Component = __webpack_require__(1)(
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/laravelApp_One/resources/assets/js/components/editPost.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/editPost.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] editPost.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -44886,9 +44907,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-c6d4c7a6", Component.options)
+    hotAPI.createRecord("data-v-43a8175a", Component.options)
   } else {
-    hotAPI.reload("data-v-c6d4c7a6", Component.options)
+    hotAPI.reload("data-v-43a8175a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -45231,12 +45252,613 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-c6d4c7a6", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-43a8175a", module.exports)
   }
 }
 
 /***/ }),
 /* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(69)
+}
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(71),
+  /* template */
+  __webpack_require__(72),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  "data-v-af4b3ea8",
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/categories.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] categories.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-af4b3ea8", Component.options)
+  } else {
+    hotAPI.reload("data-v-af4b3ea8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(70);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(5)("6f2df07e", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-af4b3ea8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./categories.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-af4b3ea8\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./categories.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(4)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.cats_table[data-v-af4b3ea8] {\n  margin-top: 50px;\n  border: 2px solid #FFF;\n  padding: 5px 0;\n  border-radius: 5px;\n}\ntr[data-v-af4b3ea8] {\n  overflow: hidden;\n  box-sizing: border-box;\n  background-color: #fff;\n  border: 1px solid #F4F4EF;\n  margin: 10px 0;\n}\n.name[data-v-af4b3ea8] {\n  float: left;\n  width: 20%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.desc[data-v-af4b3ea8] {\n  float: left;\n  width: 50%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.adminName[data-v-af4b3ea8] {\n  float: left;\n  width: 15%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.actions[data-v-af4b3ea8]{\n  float: right;\n  width: 15%;\n  box-sizing: border-box;\n  overflow: hidden;\n}\n.fa-trash-o[data-v-af4b3ea8]:hover {\n  color: #FFF;\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  props: ['currentAdmin'],
+
+  data: function data() {
+    return {
+      categories: [],
+      newCategoryName: '',
+      newCategoryNameError: '',
+      newCategoryDesc: '',
+      newCategoryDescError: '',
+
+      editCategoryName: '',
+      editCategoryNameError: '',
+      editCategoryDesc: '',
+      editCategoryDescError: ''
+    };
+  },
+
+
+  methods: {
+    accessActions: function accessActions(category) {
+      if (category.admin.id == this.currentAdmin.id || this.currentAdmin.role == 1 || this.currentAdmin.role < category.admin.role) {
+        return true;
+      }
+    },
+    createNewCategory: function createNewCategory() {
+      var _this = this;
+
+      axios.post("http://one.app/categories/create", {
+        name: this.newCategoryName,
+        description: this.newCategoryDesc
+      }).then(function (response) {
+        console.log(response);
+        _this.newCategoryName = '';
+        _this.newCategoryNameError = '';
+        _this.newCategoryDesc = '';
+        _this.newCategoryDescError = '';
+        _this.categories.unshift(response.data.category);
+      }).catch(function (error) {
+        //console.log(error);
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response.data);
+
+          if (error.response.data.name) _this.newCategoryNameError = error.response.data.name[0];else _this.newCategoryNameError = '';
+
+          if (error.response.data.description) _this.newCategoryDescError = error.response.data.description[0];else _this.newCategoryDescError = '';
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    },
+    editCategory: function editCategory(category) {
+      this.editCategoryName = category.name;
+      this.editCategoryDesc = category.description;
+    },
+    updateCategory: function updateCategory(category, editCategoryName, editCategoryDesc) {
+      var _this2 = this;
+
+      axios.put("http://one.app/categories/" + category.id + "/edit", {
+        name: editCategoryName,
+        description: editCategoryDesc
+      }).then(function (response) {
+        console.log(response);
+        category.name = response.data.category.name;
+        category.description = response.data.category.description;
+
+        _this2.editCategoryNameError = '';
+        _this2.editCategoryDescError = '';
+      }).catch(function (error) {
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response.data);
+
+          if (error.response.data.name) _this2.editCategoryNameError = error.response.data.name[0];else _this2.editCategoryNameError = '';
+
+          if (error.response.data.description) _this2.editCategoryDescError = error.response.data.description[0];else _this2.editCategoryDescError = '';
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    },
+    deleteCategory: function deleteCategory(id) {
+      var _this3 = this;
+
+      axios.delete("http://one.app/categories/" + id + "/delete").then(function (response) {
+        console.log(response);
+
+        var position = _this3.categories.findIndex(function (element) {
+          return element.id == id;
+        });
+        _this3.categories.splice(position, 1);
+        console.log(_this3.categories);
+      }).catch(function (error) {
+        //console.log(error);
+        if (error.response) {
+          console.log("Error 1");
+          console.log(error.response.data);
+
+          console.log("Error 2");
+          console.log(error.response.status);
+
+          console.log("Error 3");
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log("Error 4");
+          console.log(error.request);
+        } else {
+          console.log("Error 5");
+          console.log('Error', error.message);
+        }
+        console.log(error.config);
+      });
+    }
+  },
+
+  computed: {},
+
+  created: function created() {
+    var _this4 = this;
+
+    //console.log("this.currentAdmin: ");
+    //console.log(this.currentAdmin);
+    axios.get("http://one.app/categories/show").then(function (response) {
+      console.log(response);
+      _this4.categories = response.data.categories;
+    }).catch(function (error) {
+      //console.log(error);
+      if (error.response) {
+        console.log("Error 1");
+        console.log(error.response.data);
+
+        console.log("Error 2");
+        console.log(error.response.status);
+
+        console.log("Error 3");
+        console.log(error.response.headers);
+      } else if (error.request) {
+        console.log("Error 4");
+        console.log(error.request);
+      } else {
+        console.log("Error 5");
+        console.log('Error', error.message);
+      }
+      console.log(error.config);
+    });
+  }
+});
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('form', {
+    on: {
+      "submit": function($event) {
+        $event.preventDefault();
+        _vm.createNewCategory($event)
+      }
+    }
+  }, [_c('div', {
+    staticClass: "col-md-8 col-md-offset-2 form-input-space"
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.newCategoryName),
+      expression: "newCategoryName"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "type": "text",
+      "required": "",
+      "placeholder": "Category Name: ",
+      "minlength": "5",
+      "maxlength": "100"
+    },
+    domProps: {
+      "value": (_vm.newCategoryName)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.newCategoryName = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "help-block danger"
+  }, [_vm._v("\n        " + _vm._s(_vm.newCategoryNameError) + "\n      ")])]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-8 col-md-offset-2 form-input-space"
+  }, [_c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.newCategoryDesc),
+      expression: "newCategoryDesc"
+    }],
+    staticClass: "form-control",
+    attrs: {
+      "cols": "50",
+      "rows": "3",
+      "placeholder": "Category Description: ",
+      "required": "",
+      "minlength": "5",
+      "maxlength": "255"
+    },
+    domProps: {
+      "value": (_vm.newCategoryDesc)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.newCategoryDesc = $event.target.value
+      }
+    }
+  }), _vm._v(" "), _c('span', {
+    staticClass: "help-block danger"
+  }, [_vm._v("\n        " + _vm._s(_vm.newCategoryDescError) + "\n      ")])]), _vm._v(" "), _vm._m(0)]), _vm._v(" "), _c('div', {
+    staticClass: "col-md-8 col-md-offset-2 cats_table"
+  }, [_c('table', {
+    staticClass: "table"
+  }, [_vm._m(1), _vm._v(" "), _c('tbody', _vm._l((_vm.categories), function(category) {
+    return _c('tr', [_c('td', {
+      staticClass: "name"
+    }, [_c('p', [_vm._v(_vm._s(category.name))])]), _vm._v(" "), _c('td', {
+      staticClass: "desc"
+    }, [_c('p', [_vm._v(_vm._s(category.description))])]), _vm._v(" "), _c('td', {
+      staticClass: "adminName"
+    }, [_vm._v(_vm._s(category.admin.name))]), _vm._v(" "), _c('td', {
+      staticClass: "actions"
+    }, [_c('span', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (_vm.accessActions(category)),
+        expression: "accessActions(category)"
+      }]
+    }, [_c('button', {
+      staticClass: "btn btn-danger btn-sm",
+      on: {
+        "click": function($event) {
+          _vm.deleteCategory(category.id)
+        }
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-2x fa-trash-o",
+      attrs: {
+        "title": "Delete Post",
+        "aria-hidden": "true"
+      }
+    })]), _vm._v(" "), _c('button', {
+      staticClass: "btn btn-default btn-sm",
+      attrs: {
+        "data-toggle": "modal",
+        "data-target": '#editModal' + category.id
+      },
+      on: {
+        "click": function($event) {
+          _vm.editCategory(category)
+        }
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-2x fa-pencil-square-o",
+      attrs: {
+        "title": "Edit Post",
+        "aria-hidden": "true"
+      }
+    })]), _vm._v(" "), _c('div', {
+      staticClass: "modal fade",
+      attrs: {
+        "id": 'editModal' + category.id,
+        "role": "dialog"
+      }
+    }, [_c('div', {
+      staticClass: "modal-dialog modal-lg"
+    }, [_c('div', {
+      staticClass: "modal-content"
+    }, [_vm._m(2, true), _vm._v(" "), _c('div', {
+      staticClass: "modal-body",
+      staticStyle: {
+        "text-align": "left"
+      }
+    }, [_c('div', [_c('input', {
+      directives: [{
+        name: "model",
+        rawName: "v-model",
+        value: (_vm.editCategoryName),
+        expression: "editCategoryName"
+      }],
+      staticClass: "form-control",
+      attrs: {
+        "type": "text",
+        "required": "",
+        "placeholder": "New Category Name: ",
+        "minlength": "5",
+        "maxlength": "100"
+      },
+      domProps: {
+        "value": (_vm.editCategoryName)
+      },
+      on: {
+        "input": function($event) {
+          if ($event.target.composing) { return; }
+          _vm.editCategoryName = $event.target.value
+        }
+      }
+    }), _vm._v(" "), _c('span', {
+      staticClass: "help-block danger"
+    }, [_vm._v("\n                          " + _vm._s(_vm.editCategoryNameError) + "\n                        ")])]), _vm._v(" "), _c('div', [_c('textarea', {
+      directives: [{
+        name: "model",
+        rawName: "v-model",
+        value: (_vm.editCategoryDesc),
+        expression: "editCategoryDesc"
+      }],
+      staticClass: "form-control",
+      attrs: {
+        "cols": "50",
+        "rows": "3",
+        "placeholder": "New Category Description: ",
+        "required": "",
+        "minlength": "5",
+        "maxlength": "255"
+      },
+      domProps: {
+        "value": (_vm.editCategoryDesc)
+      },
+      on: {
+        "input": function($event) {
+          if ($event.target.composing) { return; }
+          _vm.editCategoryDesc = $event.target.value
+        }
+      }
+    }), _vm._v(" "), _c('span', {
+      staticClass: "help-block danger"
+    }, [_vm._v("\n                          " + _vm._s(_vm.editCategoryDescError) + "\n                        ")])])]), _vm._v(" "), _c('div', {
+      staticClass: "modal-footer"
+    }, [_c('button', {
+      staticClass: "btn btn-default",
+      attrs: {
+        "type": "button",
+        "data-dismiss": "modal"
+      }
+    }, [_vm._v("Close")]), _vm._v(" "), _c('button', {
+      staticClass: "btn btn-primary",
+      attrs: {
+        "type": "button"
+      },
+      on: {
+        "click": function($event) {
+          _vm.updateCategory(category, _vm.editCategoryName, _vm.editCategoryDesc)
+        }
+      }
+    }, [_vm._v("Update")])])])])])])])])
+  }))])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "col-md-4 col-md-offset-4",
+    staticStyle: {
+      "text-align": "center",
+      "margin-top": "11px"
+    }
+  }, [_c('button', {
+    staticClass: "btn btn-success",
+    attrs: {
+      "type": "submit"
+    }
+  }, [_vm._v("Create New Category ")])])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('thead', [_c('th', {
+    staticClass: "name"
+  }, [_vm._v("--Name")]), _vm._v(" "), _c('th', {
+    staticClass: "desc"
+  }, [_vm._v("--Description")]), _vm._v(" "), _c('th', {
+    staticClass: "adminName"
+  }, [_vm._v("--Creator")]), _vm._v(" "), _c('th', {
+    staticClass: "actions"
+  })])
+},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "modal-header",
+    staticStyle: {
+      "text-align": "left"
+    }
+  }, [_c('button', {
+    staticClass: "close",
+    attrs: {
+      "type": "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("×")]), _vm._v(" "), _c('h4', {
+    staticClass: "modal-title"
+  }, [_vm._v("Delete?")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-af4b3ea8", module.exports)
+  }
+}
+
+/***/ }),
+/* 73 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
