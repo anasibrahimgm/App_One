@@ -38,12 +38,12 @@ Route::get('/login', 'Auth\LoginController@getLogin')->name('login');
 Route::get('/register', 'Auth\RegisterController@getRegister')->name('register');
 
 Route::get('users/{username}', 'ProfilesController@show')->name('users.show');
+Route::get('/mydata', 'ProfilesController@currentUser')->name('currentuser');
 Route::get('editProfile', 'ProfilesController@edit')->name('editProfile');
 Route::put('updateProfile', 'ProfilesController@update')->name('updateProfile');
 Route::delete('deleteProfile', 'ProfilesController@destroy')->name('deleteProfile');
 
 Route::resource('posts', 'PostsController');
-Route::get('userPosts/{user_id}', 'PostsController@userPosts');
 
 // if we wanted to logOut only admins
 Route::post('user/logout', 'Auth\LoginController@userLogout')->name('logout');
@@ -69,8 +69,13 @@ Route::delete('comments/{id}/delete', 'CommentsController@delete')->name('commen
 
 Route::get('postcomments/{id}', 'CommentsController@showPostComments');
 
-Route::get('categories','CategoryController@index')->name('categories.index');
-Route::get('categories/show','CategoryController@showCategories')->name('categories.show');
-Route::post('categories/create','CategoryController@store')->name('categories.store');
-Route::put('categories/{id}/edit','CategoryController@update')->name('categories.update');
-Route::delete('categories/{id}/delete','CategoryController@destroy')->name('categories.destroy');
+Route::prefix('/admin/categories')->group(function() {
+  Route::get('/','CategoryController@index')->name('categories.index');
+  Route::get('/show','CategoryController@showCategories')->name('categories.show');
+  Route::post('/create','CategoryController@store')->name('categories.store');
+  Route::put('/{id}/edit','CategoryController@update')->name('categories.update');
+  Route::delete('/{id}/delete','CategoryController@destroy')->name('categories.destroy');
+});
+
+Route::get('categories','userCategoryController@index')->name('categories.all');
+Route::get('categories/{id}','userCategoryController@show')->name('categories.all');

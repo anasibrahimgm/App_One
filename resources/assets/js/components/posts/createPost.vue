@@ -10,6 +10,25 @@
           <i @click="createNewPost = false" title="Cancel" class="fa fa-times" aria-hidden="true"></i>
         </div>
 
+        <div class="col-md-12">
+          Category:
+          <span v-show="!allCats">
+            <select class="form-control" v-model="selectedCat">
+              <option v-for="category in myCategories">{{ category.name }}</option>
+            </select>
+          </span>
+
+          <span v-show="allCats">
+            <select class="form-control" v-model="selectedCat">
+              <option v-for="category in allcategories">{{ category.name }}</option>
+            </select>
+          </span>
+        </div>
+
+        <div class="col-md-12" style="margin: 10px 0;">
+          <input @click="allCats = !allCats" type="checkbox" class="custom-control-input"> All Categories
+        </div>
+
         <div class="col-md-12 form-input-space">
           <input v-model="title" type="text" class="form-control form-title" required placeholder="Title: " minlength="5" maxlength="255" />
           <span class="help-block danger">
@@ -60,6 +79,8 @@
 import axios from 'axios';
 
 export default {
+  props: ['allcategories', 'myCategories'],
+
   data() {
     return {
       createNewPost: false,
@@ -71,6 +92,10 @@ export default {
       titleError: '',
       slugError: '',
       bodyError: '',
+
+      allCats: false,
+      selectedCat: '',
+      selectedCatID: '',
     }
   },
 
@@ -89,11 +114,19 @@ export default {
     },
 
     submitPost() {
+      const position  = this.allcategories.findIndex(
+        (element) => {
+          return element.name == this.selectedCat;
+        }
+      );
+      this.selectedCatID = this.allcategories[position].id;
+
       axios.post("http://one.app/posts/", {
         title: this.title,
         slug: this.slug,
         body: this.body,
         image: this.image,
+        category: this.selectedCatID,
       })
       .then(
         response => {
@@ -109,7 +142,7 @@ export default {
           this.body = '';
           this.bodyError = '';
           this.image = '';
-
+          this.selectedCat = '';
         }
       )
       .catch(
@@ -157,3 +190,18 @@ export default {
 
 }
 </script>
+
+<style>
+.select2-container{
+  width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+  border-radius: 0 !important;
+}
+
+textarea {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+</style>

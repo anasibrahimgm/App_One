@@ -20,16 +20,15 @@ class CategoryController extends Controller
 
   public function index()
   {
-    return view('categories.show');
+    return view('categories.admin.index');
   }
 
   public function showCategories()
   {
-    $categories = Category::orderBy('created_at', 'desc')->get();
-
-    foreach ($categories as $category) {
-      $admins[$category->admin->id] = $category->admin;
-    }
+    $categories = Category::with('admin')
+                  ->withCount('users', 'posts as catPosts')
+                  ->orderBy('created_at', 'desc')
+                  ->get();
 
     return response()->json(['categories' => $categories], 200);
   }
@@ -46,7 +45,6 @@ class CategoryController extends Controller
 
     $category->save();
 
-    //return view('categories.edit')->withCategory($category);
     return response()->json(['message' =>'Category Created Successfully', 'category' => $category], 200);
   }
 
@@ -79,9 +77,14 @@ class CategoryController extends Controller
 
     if (($category->admin_id == $currentAdmin->id) || ($currentAdmin->role == 1) || ($currentAdmin->role < $category->admin->role))
     {
+      //$category->users()->detach();// detatch all the users from the category
+      $category->posts()->detach();
       $category->delete();
+      return response()->json(['message' => 'Category Successfully DELETED'], 200);
+    }
+    else {
+      return response()->json(['message' => 'Category Can\'t be DELETED']);
     }
 
-    return response()->json(['message' => 'Category Successfully DELETED']);
   }
 }

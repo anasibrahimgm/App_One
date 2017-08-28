@@ -1,47 +1,40 @@
 <template>
   <div>
-    <div id="posts" class="tab-pane fade in active">
       <p class="horizontalTabSmall">Posts</p>
 
-      <div v-show="own">
+      <div v-show="owner">
         <p class="lead" v-show="!user.posts_no">Create Your First Post</p>
         <create-post
+          :allcategories="allcategories"
+          :myCategories="user.categories"
           @newPost="onNewPost($event)">
         </create-post>
       </div>
 
       <!--@if( !$user->posts_no and ($user->id != Auth::id()) )-->
-      <p class="lead" v-show="!user.posts_no && !own">This User has No Posts</p>
+      <p class="lead" v-show="!user.posts_no && !owner">This User has No Posts</p>
 
       <div class="col-md-12 posts-container">
-        <post-content
-          v-for="post in posts"
-          :post="post"
-          :owner="own"
-          :postOwner="user"
-          :loggedIn="loggedIn"
-          :currentUser="currentUser"
-          @postDeleted="onPostDeleted($event)"
-          >
-        </post-content>
+        <div v-for="post in posts">
+          <post-content
+            :post-data="post"
+            :authId="authId"
+            @postDeleted="onPostDeleted($event)"
+            >
+          </post-content>
+        </div>
       </div>
-    </div>
   </div>
 </template>
 
 <script>
-import postContent from './postContent.vue';
-
 export default{
-  props: ['user', 'own', 'loggedIn', 'currentUser'],
-
-  components: {
-    'post-content': postContent,
-  },
+  props: ['user', 'authId', 'allcategories'],
 
   data() {
     return {
-      posts: [],
+      owner: false,
+      posts: this.user.posts,
     }
   },
 
@@ -62,6 +55,12 @@ export default{
   },
 
   created() {
+    if (this.authId && (this.authId == this.user.id) )
+    {
+      this.owner= true;
+    }
+
+    /*
     if (this.user.posts_no != 0)
     {
       axios.get("http://one.app/userPosts/" + this.user.id)
@@ -104,6 +103,8 @@ export default{
     else {
       console.log("this User has NO POSTS");
     }
+
+    */
   },
 
 }

@@ -8,8 +8,27 @@
         <i class="fa fa-calendar" aria-hidden="true"></i> Updated At:  {{ post.updated_at}}
       </div>
       <br/><br/>
+      <div class="col-md-12">
+        Category:
+        <span v-show="!allCats" v-model="selectedCat">
+          <select class="form-control">
+            <option v-for="category in post.user.categories" :selected="category.id == post.category.id ? true : false">{{ category.name }}</option>
+          </select>
+        </span>
+
+        <span v-show="allCats">
+          <select class="form-control" v-model="selectedCat">
+            <option v-for="category in allcategories">{{ category.name }}</option>
+          </select>
+        </span>
+      </div>
+
+      <div class="col-md-12" style="margin: 10px 0;">
+        <input @click="allCats = !allCats" type="checkbox" class="custom-control-input"> All Categories
+      </div>
 
       <div class="col-md-12 form-input-space">
+        Title:
         <input v-model="title" type="text" class="form-control form-title" required placeholder="Title: " minlength="5" maxlength="255" />
         <span class="help-block danger">
           {{ titleError }}
@@ -17,14 +36,15 @@
       </div>
 
       <div class="col-md-12 form-input-space">
+        Slug:
         <input v-model="slug" type="text" class="form-control form-slug" required placeholder="Slug: " minlength="5" maxlength="255" />
         <span class="help-block danger">
           {{ slugError }}
         </span>
-        Generate Slug
       </div>
 
       <div class="col-md-12 form-input-space">
+        Body:
         <textarea v-model="body" class="form-control" cols="50" rows="7" placeholder="Body:"></textarea>
         <span class="help-block danger">
           {{ bodyError}}
@@ -70,6 +90,11 @@ export default {
       titleError: '',
       slugError: '',
       bodyError: '',
+
+      allcategories: [],
+      allCats: false,
+      selectedCat: '',
+      selectedCatID: '',
     }
   },
 
@@ -90,14 +115,27 @@ export default {
     },
 
     submitPost() {
+
+      const position  = this.allcategories.findIndex(
+        (element) => {
+          return element.name == this.selectedCat;
+        }
+      );
+      this.selectedCatID = this.allcategories[position].id;
+
+      console.log("this.selectedCatID: ");
+      console.log(this.selectedCatID);
+
       if (this.image)
         console.log("this.image : " + this.image);
 
+        /*
       axios.put("http://one.app/posts/" + this.post.id, {
         title: this.title,
         slug: this.slug,
         body: this.body,
         image: this.image,
+        category: this.selectedCatID,
       })
       .then(
         response => {
@@ -110,41 +148,34 @@ export default {
           console.log(error);
           if (error.response) {
             console.log("Error 1");
-             // The request was made and the server responded with a status code
-             // that falls out of the range of 2xx
-             console.log(error.response.data);
-             if (error.response.data.title)
-                this.titleError = error.response.data.title[0];
+            console.log(error.response.data);
+            if (error.response.data.title)
+               this.titleError = error.response.data.title[0];
 
-             if (error.response.data.slug)
-                this.slugError = error.response.data.slug[0];
+            if (error.response.data.slug)
+               this.slugError = error.response.data.slug[0];
 
-             if (error.response.data.body)
-                this.bodyError = error.response.data.body[0];
-
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             // The request was made but no response was received
-             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-             // http.ClientRequest in node.js
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             // Something happened in setting up the request that triggered an Error
-             console.log("Error 5");
-             console.log('Error', error.message);
+            if (error.response.data.body)
+               this.bodyError = error.response.data.body[0];
            }
-           console.log(error.config);
         }
       );
+      */
     },
   },
 
   created() {
+    axios.get("http://one.app/categories/")
+    .then(
+      response => {
+        if (response.data.categories)
+          this.allcategories = response.data.categories;
+        })
+    .catch(
+      error => {
+         console.log(error);
+       });
+
     if (this.post.image)
     {
       this.image = this.post.image;

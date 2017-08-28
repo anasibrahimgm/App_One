@@ -5,7 +5,8 @@
       <div class="col-md-9">
         <user-data
           :user="profileUser"
-          :own="owner">
+          :own="owner"
+        >
         </user-data>
 
         <div class="horizontalTab"></div>
@@ -16,25 +17,35 @@
             <p class="horizontalTabSmall">Feeds</p>
             <ul class="nav nav-pills nav-stacked">
               <li class="active"><a data-toggle="pill" href="#posts">Posts&nbsp;<span class="badge">{{ profileUser.posts_no }}</span></a></li>
-              <li><a data-toggle="pill" href="#comments">Comments&nbsp;<span class="badge">{{ profileUser.comments_no }}</span></a></li>
+              <li><a data-toggle="pill" href="#cats">Categories&nbsp;<span class="badge">{{ profileUser.categories.length }}</span></a></li>
               <li><a data-toggle="pill" href="#replies">Replies&nbsp;<span class="badge">{{ profileUser.replies_no }}</span></a></li>
             </ul>
           </div>
 
           <div class="feeds-right">
               <div class="tab-content info">
-                <user-posts
-                  :user="profileUser"
-                  :own="owner"
-                  :currentUser="currentUser"
-                  :loggedIn="loggedIn"
-                  >
-                </user-posts>
 
-                <div id="comments" class="tab-pane fade">
-                  <p class="horizontalTabSmall">Comments</p>
-                  <!--@if( !$user->comments_no and ($user->id != Auth::id()) )-->
-                    <p class="lead" v-show="!profileUser.comments_no && !owner">This User has No Comments</p>
+                <div id="posts" class="tab-pane fade in active">
+                  <user-posts
+                    :user="profileUser"
+                    :authId="authId"
+                    :allcategories="allcategories"
+                  >
+                  </user-posts>
+                </div>
+                <div id="cats" class="tab-pane fade">
+
+                  <p class="horizontalTabSmall">Categories</p>
+                    <!--p class="lead" v-show="!profileUser.comments_no && !owner">This User has No Comments</p-->
+                    <h1>All Categories</h1>
+                    <p style="color: #F30" v-for="category in allcategories">
+                      {{ category.name }}
+                    </p>
+
+                    <h1>User Categories</h1>
+                    <p style="color: #F3E" v-for="category in profileUser.categories">
+                      {{ category.name }}
+                    </p>
                 </div>
 
                 <div id="replies" class="tab-pane fade">
@@ -59,28 +70,39 @@
 import axios from 'axios';
 
 export default {
-  props: ['currentUser', 'profileUser', 'loggedIn'],
+  props: ['profileUser', 'authId'],
 
   data() {
     return {
       owner: false,
+      allcategories: [],
     }
   },
 
   methods: {
+
   },
 
   created() {
+
+    if (this.authId && (this.authId == this.profileUser.id) )
+    {
+      this.owner= true;
+    }
+
     this.profileUser.avatar = "../images/users/avatars/" + this.profileUser.avatar;
 
-    if (this.currentUser) {//if logged in User
-      if (this.currentUser.id == this.profileUser.id) {
-        this.owner= true;
-      }
-    }
-    else {
-      console.log("Not logged in");
-    }
+    axios.get("http://one.app/categories/")
+    .then(
+      response => {
+        if (response.data.categories)
+          this.allcategories = response.data.categories;
+        })
+    .catch(
+      error => {
+         console.log(error);
+       });
+         
   },
 
 }

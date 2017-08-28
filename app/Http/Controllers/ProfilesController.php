@@ -17,11 +17,19 @@ class ProfilesController extends Controller
       $this->middleware('auth')->except('show');
     }
 
+    public function currentUser()
+    {
+      $user = User::with('categories', 'posts.category', 'posts.comments', 'comments')
+              ->find(Auth::id());
+      return response()->json(['currentUser' => $user]);
+    }
+
     public function show($username)//show profile
     {
-        $user = User::where('username', $username)->first();
-        //$posts = Post::where('user_id', $user->id)->get();
-        return view('profiles.show')->withUser($user);//->withPosts($posts);
+        $user = User::where('username', $username)
+                ->with('categories', 'posts.category', 'posts.user', 'posts.comments', 'posts.comments.user', 'comments')
+                ->first();
+        return view('profiles.show')->withUser($user);
     }
 
     public function edit()//edit Profile//only profile owner
@@ -58,7 +66,7 @@ class ProfilesController extends Controller
 
           Image::make($decoded)->save($location);
 
-          if ($user->avatar != 'avatar.png' || $user->avatar != 'app_one.png')
+          if ($user->avatar != 'avatar.png' && $user->avatar != 'app_one.png')
             Storage::delete('images/users/avatars/' . $user->avatar);
 
           $user->avatar = $fileName;

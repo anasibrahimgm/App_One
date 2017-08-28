@@ -5,7 +5,7 @@
     <div :class="completePost? 'col-md-8 col-md-offset-2' : ''">
       <div class="post-content-left">
         <div class="post-content-left-img">
-          <img :src="postOwner.avatar" />
+          <img :src="'../images/users/avatars/' + post.user.avatar" />
         </div>
       </div>
           <!-- Post Content RIGHT -->
@@ -13,13 +13,13 @@
         <div class="post-content-right-top">
           <div class="post-top-left">
             <ul class="post-data">
-              <li class="post-owner"><a :href="postOwner.username">{{ postOwner.name }}</a></li>
+              <li class="post-owner"><a :href="post.user.username">{{ post.user.name }}</a></li>
               <li class="post-time"><a :href="post.slug">{{ post.created_at }}</a></li>
             </ul>
           </div>
 
           <!-- IF owner is Auth::unser() -->
-          <div class="post-top-right" v-show="owner">
+          <div class="post-top-right" v-show="authId==post.user_id">
             <span class="left" data-toggle="modal" :data-target="'#deleteModal' + post.id"><i title="Delete Post" class="fa fa-2x fa-trash-o" aria-hidden="true"></i></span>
 
             <div class="modal fade" :id="'deleteModal' + post.id" role="dialog">
@@ -46,6 +46,7 @@
 
         <div class="col-md-12">
           <h3>{{ post.title }}</h3>
+          <h3>Category: {{ post.category.name }}</h3>
           <!-- Post Content LEFT -->
           <span v-show="!completePost" class="lead" style="font-size:17px;">{{ post.body.substr(0, 250) }}
             <div v-show="post.body.length > 250 ">
@@ -90,28 +91,33 @@
         <br />
       </div>
 
-      <div v-show="loggedIn" class="col-md-12 form-input-space" style="padding: 15px;">        <input v-model="comment" v-on:keyup.enter="submitComment" type="text" class="form-control form-title" placeholder="Comment.." />
+      <div v-show="authId" class="col-md-12 form-input-space" style="padding: 15px;">
+        <input v-model="comment" v-on:keyup.enter="submitComment" type="text" class="form-control form-title" placeholder="Comment.." />
         <span class="help-block danger">
           {{ commentError }}
         </span>
       </div>
 
       <div class="col-md-12">
-        <i class="fa fa-comments" aria-hidden="true"></i> {{ comments.length }} Comments
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ post.comments ? post.comments.length : 0 }} Comments
       </div>
 
-      <div class="col-md-12 comment-content" v-for="comment in comments">
+      <div class="col-md-12 comment-content" v-for="comment in post.comments">
         <div class="comment-content-left">
           <img :src="'../images/users/avatars/' + comment.user.avatar" style="width: 50px; height: 50px;"/>
         </div>
         <div class="comment-content-middle">
-          <h4 style="margin-bottom:0;"><a :href="comment.user.username">{{ comment.user.name }}</a></h4>
+          <h4 style="margin-bottom:0;"><a :href="'../users/' + comment.user.username ">{{ comment.user.name }}</a></h4>
           <p>{{ comment.body }}</p>
         </div>
 
-        <div v-if="currentUser.id == comment.user.id" class="comment-content-right">
+        <div v-if="authId == comment.user.id" class="comment-content-right">
           <span style="padding:2px;"><i v-on:click="deleteComment(comment.id)" title="Delete Comment" class="fa fa-2x fa-trash-o" aria-hidden="true"></i></span>
         </div>
+      </div>
+
+      <div v-show="!authId" class="col-md-12" style="padding: 15px; text-align:center;">
+        <i><b><a href="http://one.app/login">Login</a></b> to add a Comment on this post</i>
       </div>
 
                                   <!-- END Comments Area -->
@@ -131,16 +137,17 @@
 import axios from 'axios';
 
 export default{
-  props: ['post', 'owner', 'postOwner', 'completePost', 'loggedIn', 'currentUser'],
+  props: ['postData', 'authId', 'completePost'],
 
   data() {
     return {
       postImage:'',
       comment: '',
       commentError: '',
-      comments: [],
       tweetContent: '',
       deletedComment:'',
+
+      post:this.postData,
     }
   },
 
@@ -161,27 +168,11 @@ export default{
           console.log(error);
           if (error.response) {
             console.log("Error 1");
-             // The request was made and the server responded with a status code
-             // that falls out of the range of 2xx
-             console.log(error.response.data);
+            console.log(error.response.data);
 
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             // The request was made but no response was received
-             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-             // http.ClientRequest in node.js
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             // Something happened in setting up the request that triggered an Error
-             console.log("Error 5");
-             console.log('Error', error.message);
+            console.log("Error 2");
+            console.log(error.response.status);
            }
-           console.log(error.config);
         }
       );
     },
@@ -193,9 +184,9 @@ export default{
       })
       .then(
         response => {
-          console.log(response.data.comment);
+          //console.log(response.data.comment);
           this.comment = '';
-          this.comments.unshift(response.data.comment);
+          this.post.comments.unshift(response.data.comment);
         }
       )
       .catch(
@@ -205,20 +196,7 @@ export default{
              console.log("Error 1");
              if (error.response.data.body)
                 this.commentError = error.response.data.body[0];
-
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             console.log("Error 5");
-             console.log('Error', error.message);
            }
-           console.log(error.config);
         }
       );
     },
@@ -229,35 +207,23 @@ export default{
         response => {
           console.log(response);
 
-          const position  = this.comments.findIndex(
+          const position  = this.post.comments.findIndex(
             (element) => {
               return element.id == commentId;
             }
           );
-          this.comments.splice(position, 1);
+          this.post.comments.splice(position, 1);
         }
       )
       .catch(
         error => {
           console.log(error);
-          if (error.response) {
-             console.log("Error 1");
-             if (error.response.data.body)
-                this.commentError = error.response.data.body[0];
-
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             console.log("Error 5");
-             console.log('Error', error.message);
-           }
-           console.log(error.config);
+          if (error.response)
+          {
+            console.log("Error 1");
+            if (error.response.data.body)
+               this.commentError = error.response.data.body[0];
+          }
         }
       );
     },
@@ -266,44 +232,10 @@ export default{
   created() {
     this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://one.app/posts/' + this.post.slug;
     this.post.slug = "../posts/" + this.post.slug;
-    this.postOwner.username = "../users/" + this.postOwner.username;
+    this.post.user.username = "../users/" + this.post.user.username;
 
     if (this.post.image)
       this.postImage = "../images/posts/" +this.post.image;
-
-    if (this.completePost)
-    {
-      this.postOwner.avatar = "../images/users/avatars/" + this.postOwner.avatar;
-    }
-
-    axios.get("http://one.app/postcomments/" +this.post.id)
-    .then(
-      response => {
-        this.comments = response.data.comments;
-      }
-    )
-    .catch(
-      error => {
-        if (error.response) {
-           console.log("Error 1");
-           console.log(error.response);
-
-           console.log("Error 2");
-           console.log(error.response.status);
-
-           console.log("Error 3");
-           console.log(error.response.headers);
-         } else if (error.request) {
-           console.log("Error 4");
-           console.log(error.request);
-         } else {
-           console.log("Error 5");
-           console.log('Error', error.message);
-         }
-         console.log(error.config);
-      }
-    );
-
   },
 
 }

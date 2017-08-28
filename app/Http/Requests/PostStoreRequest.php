@@ -26,6 +26,7 @@ class PostStoreRequest extends FormRequest
     {
         return [
           'title' => 'required|string|min:5|max:255',
+          'category' => 'required|integer',
           'slug' => 'required|alpha_dash|min:5|max:255|unique:one_posts,slug',
           'body' => 'required|string',
         ];

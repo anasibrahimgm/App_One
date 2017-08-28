@@ -13,6 +13,7 @@ use Storage;
 use App\Http\Requests\PostStoreRequest;
 use App\Http\Requests\PostUpdateRequest;
 use Illuminate\Validation\Rule;
+use App\Category;
 
 class PostsController extends Controller
 {
@@ -27,22 +28,21 @@ class PostsController extends Controller
         //
     }
 
-    public function userPosts($user_id)
-    {
-        $posts = Post::where('user_id', $user_id)->orderBy('id', 'desc')->get();
-
-        $user = User::find($user_id);
-        $user->avatar = asset("images/users/avatars/$user->avatar");
-
-        return response()->json(['posts' => $posts, 'user' => $user], 200);
-    }
-
     public function store(PostStoreRequest $request)
     {
         $post = new Post();
         $user = User::find(Auth::id());
+        $category = Category::find($request->category);
 
         $post->user()->associate($user);
+        $post->category()->associate($category);
+
+        /*
+        //these two worked!!
+        $post->user()->associate($user);
+        $post->category()->associate($category);
+        */
+
         $post->title = $request->title;
         $post->slug = $request->slug;
         $post->body = Purifier::clean($request->body);
@@ -77,14 +77,18 @@ class PostsController extends Controller
 
     public function show($slug)
     {
-        $post = Post::where('slug', $slug)->first();
+        $post = Post::with('user', 'category', 'comments.user')
+                    ->where('slug', $slug)
+                    ->first();
+
         return view('posts.show')->withPost($post);
     }
 
     public function edit($slug)
     {
-
-      $post = Post::where('slug', $slug)->first();
+      $post = Post::with('category', 'user.categories')
+                  ->where('slug', $slug)
+                  ->first();
 
       if ($post->user_id == Auth::id())
         return view('posts.edit')->withPost($post);
@@ -97,15 +101,18 @@ class PostsController extends Controller
       $this->validate($request, [
         'slug' => Rule::unique('one_posts')->ignore($id)
       ]);
+
       $post = Post::find($id);
+      $category = Category::find($request->category);
+
 
       if ($post->user_id == Auth::id())
       {
+        $post->category()->associate($category);
+
         $post->title = $request->title;
         $post->slug = $request->slug;
-        $post->body = Purifier::clean($request->body);
-
-        $msg = 'Anas';
+        $post->body = Purifier::clean($request->body);      
 
         if ($request->image != $post->image) {
 
@@ -150,6 +157,9 @@ class PostsController extends Controller
       $user->save();
       if ($post->image)
         Storage::delete("images/posts/".$post->image);
+
+      $post->user()->disociate($user);
+      $post->category()->disociate($category);
 
       $post->delete();
 

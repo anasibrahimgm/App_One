@@ -3,9 +3,12 @@
 @section('title', "|Categories")
 
 @section('content')
-<show-categories
-@if(Auth::guard('admin')->check())
-  :current-admin='{!! Auth::guard('admin')->user()->toJson() !!}'
-@endif
-></show-categories>
+<category-posts
+  :category='{!! $category->toJson() !!}'
+  @if(Auth::check())
+  :auth-id='{!! Auth::id() !!}'
+  @endif
+>
+</category-posts>
+
 @endsection

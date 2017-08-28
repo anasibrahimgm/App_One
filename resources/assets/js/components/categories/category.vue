@@ -1,25 +1,15 @@
 <template>
   <div>
-    <form @submit.prevent="createNewCategory">
-      <div class="col-md-8 col-md-offset-2 form-input-space">
-        <input v-model="newCategoryName" type="text" class="form-control" required placeholder="Category Name: " minlength="5" maxlength="100" />
-        <span class="help-block danger">
-          {{ newCategoryNameError }}
-        </span>
-      </div>
+    <div class="col-md-8 col-md-offset-2">
+    </div>
 
-      <div class="col-md-8 col-md-offset-2 form-input-space">
-        <textarea v-model="newCategoryDesc" class="form-control" cols="50" rows="3" placeholder="Category Description: " required minlength="5" maxlength="255"></textarea>
-        <span class="help-block danger">
-          {{ newCategoryDescError }}
-        </span>
-      </div>
+    <div class="col-md-8 col-md-offset-2">
 
-      <div class="col-md-4 col-md-offset-4" style="text-align: center; margin-top:11px;">
-        <button class="btn btn-success" type="submit">Create New Category </button>
-      </div>
-    </form>
+    </div>
 
+    <div class="col-md-4 col-md-offset-4" style="text-align: center; margin-top:11px;">
+    </div>
+          
     <div class="col-md-8 col-md-offset-2 cats_table">
       <table class="table">
       <thead>
@@ -111,7 +101,7 @@ export default{
     },
 
     createNewCategory() {
-      axios.post("http://one.app/categories/create", {
+      axios.post("http://one.app/admin/categories/create", {
         name: this.newCategoryName,
         description: this.newCategoryDesc,
       })
@@ -165,7 +155,7 @@ export default{
     },
 
     updateCategory(category, editCategoryName, editCategoryDesc) {
-      axios.put("http://one.app/categories/" + category.id + "/edit", {
+      axios.put("http://one.app/admin/categories/" + category.id + "/edit", {
         name: editCategoryName,
         description: editCategoryDesc,
       })
@@ -213,7 +203,7 @@ export default{
     },
 
     deleteCategory(id) {
-      axios.delete("http://one.app/categories/" + id + "/delete")
+      axios.delete("http://one.app/admin/categories/" + id + "/delete")
       .then(
         response => {
           console.log(response);
@@ -259,7 +249,7 @@ export default{
   created() {
     //console.log("this.currentAdmin: ");
     //console.log(this.currentAdmin);
-    axios.get("http://one.app/categories/show")
+    axios.get("http://one.app/admin/categories/show")
     .then(
       response => {
         console.log(response);
