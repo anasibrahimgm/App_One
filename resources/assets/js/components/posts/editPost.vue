@@ -99,7 +99,7 @@ export default {
       allcategories: [],
       allCats: false,
       selectedCat: '',
-      selectedCatID: '',
+      selectedCatID: this.post.category.id,
     }
   },
 
@@ -125,7 +125,9 @@ export default {
           return element.name == this.selectedCat;
         }
       );
-      this.selectedCatID = this.allcategories[position].id;
+      
+      if (this.allcategories[position])
+        this.selectedCatID = this.allcategories[position].id;
 
       if (this.image)
         console.log("this.image : " + this.image);

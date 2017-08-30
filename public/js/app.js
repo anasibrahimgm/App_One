@@ -43675,7 +43675,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       allcategories: [],
       allCats: false,
       selectedCat: '',
-      selectedCatID: ''
+      selectedCatID: this.post.category.id
     };
   },
 
@@ -43705,7 +43705,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var position = this.allcategories.findIndex(function (element) {
         return element.name == _this2.selectedCat;
       });
-      this.selectedCatID = this.allcategories[position].id;
+
+      if (this.allcategories[position]) this.selectedCatID = this.allcategories[position].id;
 
       if (this.image) console.log("this.image : " + this.image);
 
