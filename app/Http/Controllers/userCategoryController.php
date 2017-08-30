@@ -18,16 +18,35 @@ class userCategoryController extends Controller
 
   public function index()
   {
-    $categories = Category::orderBy('created_at', 'desc')->get();
+    $categories = Category::get();
     return response()->json(['categories' => $categories], 200);
   }
 
   public function show($id)
   {
-    $category = Category::with('posts.user', 'posts.category', 'posts.comments.user')
+    $category = Category::with('users', 'posts.user', 'posts.category', 'posts.comments.user')
                         ->find($id);
 
     return view('categories.show')->withCategory($category);
   }
 
+  public function subscribe($id)
+  {
+    $category = Category::find($id);
+    $user = User::find(Auth::id());
+
+    $category->users()->attach($user->id);
+
+    return response()->json(['message'=>'Category successfully Subscribed','category' => $category], 200);
+  }
+
+  public function unsubscribe($id)
+  {
+    $category = Category::find($id);
+    $user = User::find(Auth::id());
+
+    $category->users()->detach($user->id);
+
+    return response()->json(['message'=>'Category successfully Unsubscribed','category' => $category], 200);
+  }
 }

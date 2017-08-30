@@ -8,11 +8,15 @@
         <i class="fa fa-calendar" aria-hidden="true"></i> Updated At:  {{ post.updated_at}}
       </div>
       <br/><br/>
+
       <div class="col-md-12">
-        Category:
-        <span v-show="!allCats" v-model="selectedCat">
-          <select class="form-control">
-            <option v-for="category in post.user.categories" :selected="category.id == post.category.id ? true : false">{{ category.name }}</option>
+        Category: {{ post.category.name }}
+        <span v-show="!allCats">
+          <select class="form-control" v-model="selectedCat">
+            <option v-for="category in post.user.categories">{{ category.name }}</option>
+            <!--option value="" :selected="anasibrahim">one</option>
+             :selected="category.id == post.category.id ? true : false"
+            <option value="">two</option-->
           </select>
         </span>
 
@@ -81,6 +85,7 @@ export default {
   props: ['post'],
   data() {
     return {
+      anasibrahim: true,
       title: this.post.title,
       slug: this.post.slug,//automatically created after title, must be unique
       body: this.post.body,
@@ -115,7 +120,6 @@ export default {
     },
 
     submitPost() {
-
       const position  = this.allcategories.findIndex(
         (element) => {
           return element.name == this.selectedCat;
@@ -123,13 +127,9 @@ export default {
       );
       this.selectedCatID = this.allcategories[position].id;
 
-      console.log("this.selectedCatID: ");
-      console.log(this.selectedCatID);
-
       if (this.image)
         console.log("this.image : " + this.image);
 
-        /*
       axios.put("http://one.app/posts/" + this.post.id, {
         title: this.title,
         slug: this.slug,
@@ -160,7 +160,7 @@ export default {
            }
         }
       );
-      */
+
     },
   },
 

@@ -17,7 +17,7 @@ window.Vue = require('vue');
 import axios from 'axios';
 
 import adminCategories from './components/categories/admin/categories.vue'
-import catPosts from './components/categories/catPosts.vue'
+import category from './components/categories/category.vue'
 
 
 import createPost from './components/posts/createPost.vue'
@@ -33,7 +33,7 @@ import navbar from './components/navbar.vue'
 
 
 Vue.component('admin-categories', adminCategories);
-Vue.component('category-posts', catPosts);
+Vue.component('category', category);
 
 Vue.component('create-post', createPost);
 Vue.component('edit-post', editPost);
@@ -46,6 +46,39 @@ Vue.component('user-profile', userProfile);
 
 Vue.component('navbar', navbar);
 
+window.my_var = 'my name is anas ibrahim';
+
+//console.log("my_var, app.js");
+//console.log(my_var);
+//console.log("my_var, app.js");
+
+var currentUser='first';
+
+myFunction();
+
+function myFunction() {
+axios.get("http://one.app/mydata/")
+.then(
+  response => {
+    //console.log("INSIDE--currentUser, app.js");
+    currentUser = response.data.currentUser;
+    //console.log(currentUser);
+    //console.log("INSIDE--currentUser, app.js");
+  }
+)
+.catch(
+  error => {
+    ////console.log(error);
+  }
+);
+}
+//currentUser = response;
+
+//console.log("OUTSIDE--currentUser, app.js");
+//console.log(currentUser);
+//console.log("OUTSIDE--currentUser, app.js");
+
+
 const app = new Vue({
     el: '#app',
 
@@ -53,5 +86,3 @@ const app = new Vue({
         anasibrahim: 'my name is anas ibrahim',
     },
 });
-
-var osama = 'my name is anas ibrahim';

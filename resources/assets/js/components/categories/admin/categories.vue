@@ -144,20 +144,7 @@ export default{
                this.newCategoryDescError = error.response.data.description[0];
              else
                 this.newCategoryDescError = '';
-
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             console.log("Error 5");
-             console.log('Error', error.message);
            }
-           console.log(error.config);
         }
       );
     },
@@ -197,21 +184,8 @@ export default{
                this.editCategoryDescError = error.response.data.description[0];
              else
                 this.editCategoryDescError = '';
-
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             console.log("Error 5");
-             console.log('Error', error.message);
            }
-           console.log(error.config);
-        }
+         }
       );
     },
 
@@ -232,24 +206,12 @@ export default{
       )
       .catch(
         error => {
-          //console.log(error);
+          console.log(error);
           if (error.response) {
             console.log("Error 1");
              console.log(error.response.data);
 
-             console.log("Error 2");
-             console.log(error.response.status);
-
-             console.log("Error 3");
-             console.log(error.response.headers);
-           } else if (error.request) {
-             console.log("Error 4");
-             console.log(error.request);
-           } else {
-             console.log("Error 5");
-             console.log('Error', error.message);
            }
-           console.log(error.config);
         }
       );
     },
@@ -271,24 +233,11 @@ export default{
     )
     .catch(
       error => {
-        //console.log(error);
+        console.log(error);
         if (error.response) {
           console.log("Error 1");
            console.log(error.response.data);
-
-           console.log("Error 2");
-           console.log(error.response.status);
-
-           console.log("Error 3");
-           console.log(error.response.headers);
-         } else if (error.request) {
-           console.log("Error 4");
-           console.log(error.request);
-         } else {
-           console.log("Error 5");
-           console.log('Error', error.message);
          }
-         console.log(error.config);
       }
     );
   },

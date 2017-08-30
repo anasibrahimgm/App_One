@@ -9,6 +9,7 @@ use Image;
 use Storage;
 use App\Post;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Category;
 
 class ProfilesController extends Controller
 {
@@ -29,7 +30,10 @@ class ProfilesController extends Controller
         $user = User::where('username', $username)
                 ->with('categories', 'posts.category', 'posts.user', 'posts.comments', 'posts.comments.user', 'comments')
                 ->first();
-        return view('profiles.show')->withUser($user);
+
+        $allcategories = Category::get();
+
+        return view('profiles.show')->withUser($user)->withAllcategories($allcategories);
     }
 
     public function edit()//edit Profile//only profile owner

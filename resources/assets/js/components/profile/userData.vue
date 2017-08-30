@@ -4,11 +4,11 @@
       <img v-show="!owner" :src="user_avatar" style="height: 160px;"/>
 
       <div v-show="owner" class="profile-change-img-container">
-          <img :src="user_avatar" class="profile-change-img" style="height: 160px;"/>
+          <img :src="user_avatar" class="profile-change-img"/>
 
           <input type='file' id='profile-img' style='visibility:hidden; height: 11px;' @change="changeAvatar" />
           <label for='profile-img'>
-            <div class="middle" style="top: 12%; left: 11%;">
+            <div class="middle" style="top: 4%; left: 11%;">
               Change <i class="fa fa-pencil" aria-hidden="true"></i>
             </div>
           </label>

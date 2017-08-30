@@ -5,6 +5,7 @@
 @section('content')
 <user-profile
   :profile-user='{!! $user->toJson() !!}'
+  :allcategories='{!! $allcategories->toJson() !!}'
   @if (Auth::check())
     :auth-id='{!! Auth::id() !!}'
   @endif

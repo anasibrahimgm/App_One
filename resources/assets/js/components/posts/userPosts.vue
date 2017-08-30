@@ -109,3 +109,9 @@ export default{
 
 }
 </script>
+
+<style scoped>
+.posts-container {
+  margin-top: 10px;
+}
+</style>

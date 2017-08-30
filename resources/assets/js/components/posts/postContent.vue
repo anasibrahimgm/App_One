@@ -45,8 +45,8 @@
         </div>
 
         <div class="col-md-12">
-          <h3>{{ post.title }}</h3>
-          <h3>Category: {{ post.category.name }}</h3>
+          <p style="margin:0;"><span class="badge badge-info"><a :href="'../categories/' + post.category.id">{{ post.category.name }}</a></span></p>
+          <h3 style="margin:6px 0 0;">{{ post.title }}</h3>
           <!-- Post Content LEFT -->
           <span v-show="!completePost" class="lead" style="font-size:17px;">{{ post.body.substr(0, 250) }}
             <div v-show="post.body.length > 250 ">
@@ -70,19 +70,23 @@
               </div>
             </div>
         </div>
-      </div>
 
-      <div class="col-md-12">
-        <div class="fb-share-button" :data-href="post.slug" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" :href="post.slug">Share</a></div>
+        <div class="col-md-12 social-share">
+          <ul>
+            <li><div class="fb-share-button" :data-href="post.slug" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" :href="post.slug">Share</a></div></li>
 
-        <div class="fb-send" :data-href="post.slug"></div>
+            <li><div class="fb-send" :data-href="post.slug"></div></li>
 
-        <a class="twitter-share-button"
-           :href="'https://twitter.com/intent/tweet?text=' + tweetContent "
-           target="blank"
-           style="background-color:#1B95E0; color:white !important; width:30px  !important; height:20px !important;padding:2px 5px;border-radius:3px;"
-           >
-       <i class="fa fa-twitter" aria-hidden="true"></i>Tweet</a>
+            <li>
+              <a class="twitter-share-button"
+               :href="'https://twitter.com/intent/tweet?text=' + tweetContent "
+               target="blank"
+               style="background-color:#1B95E0; color:white !important; width:30px  !important; height:20px !important;padding:2px 5px;border-radius:3px;"
+               >
+               <i class="fa fa-twitter" aria-hidden="true"></i>Tweet</a>
+             </li>
+           </ul>
+        </div>
       </div>
 
                                   <!-- START Comments Area -->
@@ -99,7 +103,7 @@
       </div>
 
       <div class="col-md-12">
-        <i class="fa fa-comments" aria-hidden="true"></i> {{ post.comments ? post.comments.length : 0 }} Comments
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ post.comments.length == 0 ? 'No' : post.comments.length }} Comment{{ post.comments.length == 1 ? '' : 's'}}
       </div>
 
       <div class="col-md-12 comment-content" v-for="comment in post.comments">
@@ -117,7 +121,7 @@
       </div>
 
       <div v-show="!authId" class="col-md-12" style="padding: 15px; text-align:center;">
-        <i><b><a href="http://one.app/login">Login</a></b> to add a Comment on this post</i>
+        <i><b><a href="http://one.app/login">Login</a></b> or <b><a href="http://one.app/regis">Login</a></b> to add a Comment on this post</i>
       </div>
 
                                   <!-- END Comments Area -->
@@ -148,6 +152,7 @@ export default{
       deletedComment:'',
 
       post:this.postData,
+
     }
   },
 
@@ -186,6 +191,7 @@ export default{
         response => {
           //console.log(response.data.comment);
           this.comment = '';
+          this.commentError = '';
           this.post.comments.unshift(response.data.comment);
         }
       )
@@ -193,7 +199,9 @@ export default{
         error => {
           console.log(error);
           if (error.response) {
-             console.log("Error 1");
+             //console.log("Error 1");
+             //console.log(error.response);
+
              if (error.response.data.body)
                 this.commentError = error.response.data.body[0];
            }
@@ -348,4 +356,23 @@ export default{
   padding-top: 10px;
 }
 
+.badge a, .badge a:hover {
+  color: #FFF !important;
+  text-decoration: none;
+}
+
+.badge-info {
+  background-color: #1B95E0;
+  border-radius: 2px;
+}
+
+.social-share ul{
+  list-style-type: none;
+  padding: 20px 0 0;
+  margin-bottom: 0;
+}
+
+.social-share li{
+  display:inline;
+}
 </style>
