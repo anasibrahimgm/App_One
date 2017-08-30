@@ -90,7 +90,7 @@ export default {
         }
       );
 
-      axios.post('http://one.app/categories/' + categoryId + (status ? '/subscribe' : '/unsubscribe') )
+      axios.post('http://one.app/categories/' + categoryId + '/subscribe' )
       .then(
         response => {
           console.log(response);

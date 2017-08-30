@@ -35,18 +35,8 @@ class userCategoryController extends Controller
     $category = Category::find($id);
     $user = User::find(Auth::id());
 
-    $category->users()->attach($user->id);
+    $category->users()->toggle($user->id);
 
-    return response()->json(['message'=>'Category successfully Subscribed','category' => $category], 200);
-  }
-
-  public function unsubscribe($id)
-  {
-    $category = Category::find($id);
-    $user = User::find(Auth::id());
-
-    $category->users()->detach($user->id);
-
-    return response()->json(['message'=>'Category successfully Unsubscribed','category' => $category], 200);
+    return response()->json(['message'=>'Category successfully Un/Subscribed','category' => $category], 200);
   }
 }

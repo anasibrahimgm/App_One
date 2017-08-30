@@ -46046,7 +46046,7 @@ $(document).ready(function () {
         return element.id == categoryId;
       });
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('http://one.app/categories/' + categoryId + (status ? '/subscribe' : '/unsubscribe')).then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('http://one.app/categories/' + categoryId + '/subscribe').then(function (response) {
         console.log(response);
         if (response.data.category) {
           if (status) {
