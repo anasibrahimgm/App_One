@@ -121,7 +121,7 @@
       </div>
 
       <div v-show="!authId" class="col-md-12" style="padding: 15px; text-align:center;">
-        <i><b><a href="http://one.app/login">Login</a></b> or <b><a href="http://one.app/regis">Login</a></b> to add a Comment on this post</i>
+        <i><b><a href="http://one.app/login">Login</a></b> or <b><a href="http://one.app/register">Register</a></b> to add a Comment on this post</i>
       </div>
 
                                   <!-- END Comments Area -->

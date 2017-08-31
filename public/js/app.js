@@ -44688,9 +44688,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("Login")])]), _vm._v(" or "), _c('b', [_c('a', {
     attrs: {
-      "href": "http://one.app/regis"
+      "href": "http://one.app/register"
     }
-  }, [_vm._v("Login")])]), _vm._v(" to add a Comment on this post")])
+  }, [_vm._v("Register")])]), _vm._v(" to add a Comment on this post")])
 }]}
 module.exports.render._withStripped = true
 if (false) {

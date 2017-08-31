@@ -6,7 +6,7 @@
   <post-content
     :post-data='{!! $post->toJson() !!}'
     :complete-post='true'
-    @if (Auth::id() == $post->user->id)
+    @if (Auth::guard('web')->check())
       :auth-id='{!! Auth::id() !!}'
     @endif
     >

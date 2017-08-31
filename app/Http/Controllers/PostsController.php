@@ -14,6 +14,7 @@ use App\Http\Requests\PostStoreRequest;
 use App\Http\Requests\PostUpdateRequest;
 use Illuminate\Validation\Rule;
 use App\Category;
+use App\Notifications\newCategoryPost;
 
 class PostsController extends Controller
 {
@@ -67,6 +68,13 @@ class PostsController extends Controller
 
         $post->save();
 
+        foreach ($category->users as $user) {
+          if ($user->id != Auth::id()) {
+            $user->notify(new newCategoryPost($post->slug, $category->name));// we use Notifiable treat on User model
+          }
+        }
+
+
         $user->posts_no++;
         $user->save();
 
@@ -112,7 +120,8 @@ class PostsController extends Controller
 
         $post->title = $request->title;
         $post->slug = $request->slug;
-        $post->body = Purifier::clean($request->body);      
+        //if slug is changed, update the notification
+        $post->body = Purifier::clean($request->body);
 
         if ($request->image != $post->image) {
 
@@ -162,6 +171,14 @@ class PostsController extends Controller
       $post->category()->disociate($category);
 
       $post->delete();
+
+      /*////////delete the notification
+      foreach ($category->users as $user) {
+        if ($user->id != Auth::id()) {
+          $user->notify(new newCategoryPost($post));// we use Notifiable treat on User model
+        }
+      }
+      */
 
       return response()->json(['message' => 'you deleted the post'], 200);
     }

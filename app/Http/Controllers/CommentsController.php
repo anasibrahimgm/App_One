@@ -7,6 +7,7 @@ use App\Comment;
 use App\User;
 use App\Post;
 use Auth;
+use App\Notifications\newComment;
 
 class CommentsController extends Controller
 {
@@ -41,6 +42,9 @@ class CommentsController extends Controller
       $comment->user()->associate($user);
 
       $comment->save();
+
+      if ($post->user->id != Auth::id())//the commenter is not the post creator
+        $post->user->notify(new newComment($post->title, $post->slug));
 
       return response()->json(['message' => 'Comment Successfully Created', 'comment' => $comment]);
     }

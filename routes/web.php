@@ -80,3 +80,7 @@ Route::prefix('/admin/categories')->group(function() {
 Route::get('categories','userCategoryController@index')->name('categories.all');
 Route::get('categories/{id}','userCategoryController@show')->name('categories.all');
 Route::post('categories/{id}/subscribe','userCategoryController@subscribe')->name('categories.subscribe');
+
+Route::get('markNotifcationsRead', function () {
+  return Auth::user()->unreadNotifications->markAsRead();
+});

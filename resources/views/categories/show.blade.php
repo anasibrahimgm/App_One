@@ -5,7 +5,7 @@
 @section('content')
 <category
   :category='{!! $category->toJson() !!}'
-  @if(Auth::check())
+  @if (Auth::guard('web')->check())
   :auth-id='{!! Auth::id() !!}'
   @endif
 >

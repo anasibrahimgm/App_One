@@ -6,7 +6,7 @@
 <user-profile
   :profile-user='{!! $user->toJson() !!}'
   :allcategories='{!! $allcategories->toJson() !!}'
-  @if (Auth::check())
+  @if (Auth::guard('web')->check())
     :auth-id='{!! Auth::id() !!}'
   @endif
 >

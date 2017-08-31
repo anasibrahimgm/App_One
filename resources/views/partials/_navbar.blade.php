@@ -36,6 +36,27 @@
                   <li><a href="{{ route('login') }}">Login</a></li>
                   <li><a href="{{ route('register') }}">Register</a></li>
               @else
+                  <li class="dropdown" onclick="markNotifcationsRead()">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                      <span class="glyphicon glyphicon-globe"></span> Notifications <span class="badge">{{ count(Auth::user()->unreadNotifications)}}</span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" style="padding: 0;">
+                      @forelse(Auth::user()->notifications as $notification)
+                        <li style="border-bottom: 1px solid #A5A9B1; margin-bottom: 2px; background-color:{{ $notification->read_at ? '': '#E9EBEE'}};">@include('notifications.' . snake_case(class_basename($notification->type)))</li>
+                        @empty
+                        <li>
+                          <a href="#">No Unread Notifications</a>
+                        </li>
+                        {{--
+                        Wb the facebook notifications model
+                        # of unread Notifications
+                        unread Notifications
+                        read Notifications
+                        --}}
+                      @endforelse
+                    </ul>
+                  </li>
+
                   @if (Request::is('editProfile') || Request::is('users/'. Auth::user()->username) )
                     <navbar
                       :auth-user='{!! Auth::user()->toJson() !!}'
