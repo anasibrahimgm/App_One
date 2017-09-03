@@ -5,7 +5,7 @@
       <div v-show="owner">
         <p class="lead" v-show="!user.posts_no">Create Your First Post</p>
         <create-post
-          :allcategories="allcategories"
+          :remainingCats="user.remainingCats"
           :myCategories="user.categories"
           @newPost="onNewPost($event)">
         </create-post>
@@ -29,7 +29,7 @@
 
 <script>
 export default{
-  props: ['user', 'authId', 'allcategories'],
+  props: ['user', 'authId'],
 
   data() {
     return {

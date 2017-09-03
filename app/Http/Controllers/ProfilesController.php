@@ -20,6 +20,13 @@ class ProfilesController extends Controller
 
     public function currentUser()
     {
+      /*
+      $user = App\User::with('categories')->find(Auth::id());
+      $categories = App\Category::all();
+
+      $diff = $categories->diff($user->categories);//remaining categories
+
+      */
       $user = User::with('categories', 'posts.category', 'posts.comments', 'comments')
               ->find(Auth::id());
       return response()->json(['currentUser' => $user]);
@@ -31,9 +38,13 @@ class ProfilesController extends Controller
                 ->with('categories', 'posts.category', 'posts.user', 'posts.comments', 'posts.comments.user', 'comments')
                 ->first();
 
-        $allcategories = Category::get();
+        $categories = Category::all();//->only('id', 'name', 'description');
 
-        return view('profiles.show')->withUser($user)->withAllcategories($allcategories);
+        $diff = $categories->diff($user->categories);//remaining categories
+
+        $user->remainingCats = $diff;
+
+        return view('profiles.show')->withUser($user);
     }
 
     public function edit()//edit Profile//only profile owner

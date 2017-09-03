@@ -167,8 +167,8 @@ class PostsController extends Controller
       if ($post->image)
         Storage::delete("images/posts/".$post->image);
 
-      $post->user()->disociate($user);
-      $post->category()->disociate($category);
+      $post->comments()->dissociate($user);
+      //$post->category()->disociate($category);
 
       $post->delete();
 

@@ -37,8 +37,7 @@ Route::get('/login', 'Auth\LoginController@getLogin')->name('login');
 
 Route::get('/register', 'Auth\RegisterController@getRegister')->name('register');
 
-Route::get('users/{username}', 'ProfilesController@show')->name('users.show');
-Route::get('/mydata', 'ProfilesController@currentUser')->name('currentuser');
+Route::get('users/{username?}', 'ProfilesController@show')->name('users.show');
 Route::get('editProfile', 'ProfilesController@edit')->name('editProfile');
 Route::put('updateProfile', 'ProfilesController@update')->name('updateProfile');
 Route::delete('deleteProfile', 'ProfilesController@destroy')->name('deleteProfile');

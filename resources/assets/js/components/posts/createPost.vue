@@ -12,21 +12,21 @@
 
         <div class="col-md-12">
           Category:
-          <span v-show="!allCats">
+          <span v-show="!remCats">
             <select class="form-control" v-model="selectedCat">
               <option v-for="category in myCategories">{{ category.name }}</option>
             </select>
           </span>
 
-          <span v-show="allCats">
+          <span v-show="remCats">
             <select class="form-control" v-model="selectedCat">
-              <option v-for="category in allcategories">{{ category.name }}</option>
+              <option v-for="category in remainingCats">{{ category.name }}</option>
             </select>
           </span>
         </div>
 
         <div class="col-md-12" style="margin: 10px 0;">
-          <input @click="allCats = !allCats" type="checkbox" class="custom-control-input"> All Categories
+          <input @click="remCats = !remCats" type="checkbox" class="custom-control-input"> Other Categories
         </div>
 
         <div class="col-md-12 form-input-space">
@@ -79,7 +79,7 @@
 import axios from 'axios';
 
 export default {
-  props: ['allcategories', 'myCategories'],
+  props: ['remainingCats', 'myCategories'],
 
   data() {
     return {
@@ -93,9 +93,10 @@ export default {
       slugError: '',
       bodyError: '',
 
-      allCats: false,
+      remCats: false,
       selectedCat: '',
       selectedCatID: '',
+      searchCat: [],
     }
   },
 
@@ -114,12 +115,15 @@ export default {
     },
 
     submitPost() {
-      const position  = this.allcategories.findIndex(
+      this.remCats ? (this.searchCat = this.remainingCats) :  (this.searchCat = this.myCategories);
+
+      const position  = this.searchCat.findIndex(
         (element) => {
           return element.name == this.selectedCat;
         }
       );
-      this.selectedCatID = this.allcategories[position].id;
+
+      this.selectedCatID = this.searchCat[position].id;
 
       axios.post("http://one.app/posts/", {
         title: this.title,

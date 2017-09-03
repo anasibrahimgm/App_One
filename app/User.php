@@ -27,7 +27,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'confirmation_code','confirmed',
+        'password', 'remember_token', 'confirmation_code','confirmed', 'created_at', 'updated_at',
     ];
 
     public function posts()

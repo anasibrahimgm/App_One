@@ -29,7 +29,6 @@
                   <user-posts
                     :user="profileUser"
                     :authId="authId"
-                    :allcategories="allcategories"
                   >
                   </user-posts>
                 </div>
@@ -44,7 +43,7 @@
 
                     <div v-show="owner">
                       <h3>Other Categories</h3>
-                      <span v-for="category in remainingcategories" class="label label-primary">
+                      <span v-for="category in remainingCats" class="label label-primary">
                         <a data-toggle="tooltip" data-placement="top" data-html="true" :title="category.description.length > 50 ? (category.description.substr(0, 50) + '....') : category.description" :href="'../categories/' + category.id">{{ category.name }}</a>  <i class="fa fa-plus-circle" aria-hidden="true" v-show="owner" @click="subscribe(category.id, true)" title="Subscribe"></i></span>
                       </span>
                     </div>
@@ -71,20 +70,22 @@ $(document).ready(function(){
 import axios from 'axios';
 
 export default {
-  props: ['profileUser', 'allcategories', 'authId'],
+  props: ['profileUser', 'authId'],
 
   data() {
     return {
       owner: false,
-      remainingcategories: [],
+      remainingCats: this.profileUser.remainingCats,
       usercategories: this.profileUser.categories,
+      searchCat: [],
     }
   },
 
   methods: {
     subscribe(categoryId, status) {
+      status ? (this.searchCat = this.remainingCats) :  (this.searchCat = this.usercategories);
 
-      const position = this.allcategories.findIndex (
+      const position = this.searchCat.findIndex (
         element => {
           return element.id == categoryId;
         }
@@ -97,11 +98,11 @@ export default {
           if (response.data.category)
           {
             if (status) { //subscribe
-              this.usercategories.push(this.allcategories[position]);//add the subscribed category to usercategories
-              this.remainingcategories.splice(position, 1);//delete the subscribed category from remaining categories
+              this.usercategories.push(this.remainingCats[position]);//add the subscribed category to usercategories
+              this.remainingCats.splice(position, 1);//delete the subscribed category from remaining categories
             }
             else { //unsubscribe
-              this.remainingcategories.push(this.allcategories[position]);//add the unsubscribed category to the remaining categories
+              this.remainingCats.push(this.usercategories[position]);//add the unsubscribed category to the remaining categories
               this.usercategories.splice(position, 1);//delete the subscribed category from remaining categories
             }
           }
@@ -121,7 +122,7 @@ export default {
     {
       this.owner= true;
 
-      this.remainingcategories = this.allcategories.filter(o1 => this.usercategories.filter(o2 => o2.id === o1.id).length === 0);
+      //this.remainingCats = this.allcategories.filter(o1 => this.usercategories.filter(o2 => o2.id === o1.id).length === 0);
     }
 
     this.profileUser.avatar = "../images/users/avatars/" + this.profileUser.avatar;

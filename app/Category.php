@@ -9,7 +9,7 @@ class Category extends Model
     protected $table = 'one_categories';
 
     protected $hidden = [
-      'admin_id',
+      'admin_id', 'created_at', 'updated_at', 'pivot',
     ];
 
     public function admin()
