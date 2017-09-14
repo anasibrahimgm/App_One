@@ -68,17 +68,15 @@ class PostsController extends Controller
 
         $post->save();
 
+        //not after the foreach loop bc it possibly affects the last $user from the loop!
+        $user->posts_no++;
+        $user->save();
+
         foreach ($category->users as $user) {
           if ($user->id != Auth::id()) {
             $user->notify(new newCategoryPost($post->slug, $category->name));// we use Notifiable treat on User model
           }
         }
-
-
-        $user->posts_no++;
-        $user->save();
-
-        Session::flash('success', 'Post added');
 
         return response()->json(['message', 'Post Successfully Created', 'post' => $post], 200);
     }
@@ -161,16 +159,16 @@ class PostsController extends Controller
       $post = Post::find($id);
 
       $user = User::find($post->user_id);
-      $user->posts_no--;
-      //$user->posts()->detatch($post->id);
-      $user->save();
       if ($post->image)
         Storage::delete("images/posts/".$post->image);
 
-      $post->comments()->dissociate($user);
+      //$post->comments()->dissociate($user);
       //$post->category()->disociate($category);
 
       $post->delete();
+
+      $user->posts_no--;
+      $user->save();
 
       /*////////delete the notification
       foreach ($category->users as $user) {
