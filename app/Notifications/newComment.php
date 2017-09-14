@@ -7,12 +7,13 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Auth;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class newComment extends Notification
 {
   use Queueable;
 
-  protected $post_slug, $post_title;
+  public $post_slug, $post_title;
 
   /**
    * Create a new notification instance.
@@ -33,7 +34,7 @@ class newComment extends Notification
    */
   public function via($notifiable)
   {
-      return ['database'];
+      return ['database', 'broadcast'];
   }
 
   public function toDatabase($notifiable)
@@ -41,8 +42,17 @@ class newComment extends Notification
       return [
           'post_title' => $this->post_title,
           'post_slug' => $this->post_slug,
-          'commenter' => Auth::user()->name,
+          'commenter' => ucwords(Auth::user()->name),
       ];
+  }
+
+  public function toBroadcast($notifiable)
+  {
+      return new BroadcastMessage([
+        'post_title' => $this->post_title,
+        'post_slug' => $this->post_slug,
+        'commenter' => ucwords(Auth::user()->name),
+      ]);
   }
 
   /**

@@ -19,6 +19,7 @@ import axios from 'axios';
 import adminCategories from './components/categories/admin/categories.vue'
 import category from './components/categories/category.vue'
 
+import showNotifications from './components/notifications/notifications.vue'
 
 import createPost from './components/posts/createPost.vue'
 import editPost from './components/posts/editPost.vue'
@@ -34,6 +35,8 @@ import navbar from './components/navbar.vue'
 
 Vue.component('admin-categories', adminCategories);
 Vue.component('category', category);
+
+Vue.component('show-notifications', showNotifications);
 
 Vue.component('create-post', createPost);
 Vue.component('edit-post', editPost);

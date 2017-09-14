@@ -101,3 +101,6 @@ CHANGE EMAIL CONTENT
   composer require mews/purifier
   https://github.com/mewebstudio/purifier
   php artisan vendor:publish --provider="Mews\Purifier\PurifierServiceProvider"
+
+028.
+  npm install --save laravel-echo pusher-js

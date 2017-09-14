@@ -7,12 +7,13 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Auth;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
 class newCategoryPost extends Notification
 {
     use Queueable;
 
-    protected $post_slug, $category_name;
+    public $post_slug, $category_name;//so Pusher can access it
 
     /**
      * Create a new notification instance.
@@ -33,7 +34,7 @@ class newCategoryPost extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     public function toDatabase($notifiable)
@@ -41,9 +42,19 @@ class newCategoryPost extends Notification
         return [
             'post_slug' => $this->post_slug,
             'category_name' => $this->category_name,
-            'post_user' => Auth::user()->name,
+            'post_user' => ucwords(Auth::user()->name),
         ];
     }
+
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+          'post_slug' => $this->post_slug,
+          'category_name' => $this->category_name,
+          'post_user' => ucwords(Auth::user()->name),
+        ]);
+    }
+
 
     /**
      * Get the array representation of the notification.
