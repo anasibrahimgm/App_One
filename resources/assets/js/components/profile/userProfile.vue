@@ -91,7 +91,7 @@ export default {
         }
       );
 
-      axios.post('http://one.app/categories/' + categoryId + '/subscribe' )
+      axios.post('http://anasibrahimgm-app-one.herokuapp.com/categories/' + categoryId + '/subscribe' )
       .then(
         response => {
           console.log(response);

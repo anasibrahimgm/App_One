@@ -125,7 +125,7 @@ export default {
 
       this.selectedCatID = this.searchCat[position].id;
 
-      axios.post("http://one.app/posts/", {
+      axios.post("http://anasibrahimgm-app-one.herokuapp.com/posts/", {
         title: this.title,
         slug: this.slug,
         body: this.body,

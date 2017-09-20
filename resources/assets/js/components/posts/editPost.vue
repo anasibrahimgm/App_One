@@ -125,14 +125,14 @@ export default {
           return element.name == this.selectedCat;
         }
       );
-      
+
       if (this.allcategories[position])
         this.selectedCatID = this.allcategories[position].id;
 
       if (this.image)
         console.log("this.image : " + this.image);
 
-      axios.put("http://one.app/posts/" + this.post.id, {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/posts/" + this.post.id, {
         title: this.title,
         slug: this.slug,
         body: this.body,
@@ -167,7 +167,7 @@ export default {
   },
 
   created() {
-    axios.get("http://one.app/categories/")
+    axios.get("http://anasibrahimgm-app-one.herokuapp.com/categories/")
     .then(
       response => {
         if (response.data.categories)

@@ -113,7 +113,7 @@ export default {
     },
 
     updateProfile() {
-        axios.put("http://one.app/updateProfile", {
+        axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
           avatar: this.user_avatar,
           name: this.user_name,
           bio: this.user_bio,

@@ -6,7 +6,7 @@
 
     <ul class="dropdown-menu" role="menu" style="padding: 0;">
       <li v-for="notification in newNotifications" class="unread">
-        <a :href="'http://one.app/posts/' + notification.post_slug">
+        <a :href="'http://anasibrahimgm-app-one.herokuapp.com/posts/' + notification.post_slug">
           <span v-show="notification.type == 'App\\Notifications\\newCategoryPost'">
             <b>{{ notification.post_user }}</b>
             created a new <b><i>{{ notification.category_name }}</i></b> Post
@@ -20,7 +20,7 @@
       </li>
 
       <li v-for="notification in notifications" :class="(notification.read_at ? 'read': 'unread')">
-          <a :href="'http://one.app/posts/' + notification.data.post_slug">
+          <a :href="'http://anasibrahimgm-app-one.herokuapp.com/posts/' + notification.data.post_slug">
             <span v-show="notification.type == 'App\\Notifications\\newCategoryPost'">
               <b>{{ notification.data.post_user }}</b>
               created a new <b><i>{{ notification.data.category_name }}</i></b> Post

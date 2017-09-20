@@ -1270,10 +1270,10 @@ window.my_var = 'my name is anas ibrahim';
 
 var currentUser = 'first';
 
-myFunction();
+//myFunction();
 
 function myFunction() {
-  __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://one.app/mydata/").then(function (response) {
+  __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://anasibrahimgm-app-one.herokuapp.com/mydata/").then(function (response) {
     //console.log("INSIDE--currentUser, app.js");
     currentUser = response.data.currentUser;
     //console.log(currentUser);
@@ -47441,7 +47441,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     createNewCategory: function createNewCategory() {
       var _this = this;
 
-      axios.post("http://one.app/admin/categories/create", {
+      axios.post("http://anasibrahimgm-app-one.herokuapp.com/admin/categories/create", {
         name: this.newCategoryName,
         description: this.newCategoryDesc
       }).then(function (response) {
@@ -47470,7 +47470,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     updateCategory: function updateCategory(category, editCategoryName, editCategoryDesc) {
       var _this2 = this;
 
-      axios.put("http://one.app/admin/categories/" + category.id + "/edit", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/admin/categories/" + category.id + "/edit", {
         name: editCategoryName,
         description: editCategoryDesc
       }).then(function (response) {
@@ -47494,7 +47494,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     deleteCategory: function deleteCategory(id) {
       var _this3 = this;
 
-      axios.delete("http://one.app/admin/categories/" + id + "/delete").then(function (response) {
+      axios.delete("http://anasibrahimgm-app-one.herokuapp.com/admin/categories/" + id + "/delete").then(function (response) {
         console.log(response);
 
         var position = _this3.categories.findIndex(function (element) {
@@ -47519,7 +47519,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     //console.log("this.currentAdmin: ");
     //console.log(this.currentAdmin);
-    axios.get("http://one.app/admin/categories/show").then(function (response) {
+    axios.get("http://anasibrahimgm-app-one.herokuapp.com/admin/categories/show").then(function (response) {
       console.log(response);
       _this4.categories = response.data.categories;
     }).catch(function (error) {
@@ -48093,7 +48093,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "unread"
     }, [_c('a', {
       attrs: {
-        "href": 'http://one.app/posts/' + notification.post_slug
+        "href": 'http://anasibrahimgm-app-one.herokuapp.com/posts/' + notification.post_slug
       }
     }, [_c('span', {
       directives: [{
@@ -48115,7 +48115,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       class: (notification.read_at ? 'read' : 'unread')
     }, [_c('a', {
       attrs: {
-        "href": 'http://one.app/posts/' + notification.data.post_slug
+        "href": 'http://anasibrahimgm-app-one.herokuapp.com/posts/' + notification.data.post_slug
       }
     }, [_c('span', {
       directives: [{
@@ -48365,7 +48365,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       this.selectedCatID = this.searchCat[position].id;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://one.app/posts/", {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://anasibrahimgm-app-one.herokuapp.com/posts/", {
         title: this.title,
         slug: this.slug,
         body: this.body,
@@ -48886,7 +48886,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       if (this.image) console.log("this.image : " + this.image);
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.put("http://one.app/posts/" + this.post.id, {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.put("http://anasibrahimgm-app-one.herokuapp.com/posts/" + this.post.id, {
         title: this.title,
         slug: this.slug,
         body: this.body,
@@ -48913,7 +48913,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   created: function created() {
     var _this3 = this;
 
-    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://one.app/categories/").then(function (response) {
+    __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get("http://anasibrahimgm-app-one.herokuapp.com/categories/").then(function (response) {
       if (response.data.categories) _this3.allcategories = response.data.categories;
     }).catch(function (error) {
       console.log(error);
@@ -49431,9 +49431,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     deletePost: function deletePost() {
       var _this = this;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://one.app/posts/" + this.post.id).then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://anasibrahimgm-app-one.herokuapp.com/posts/" + this.post.id).then(function (response) {
         console.log(response);
-        if (_this.completePost) window.location.href = "http://one.app";else _this.$emit('postDeleted', _this.post.id);
+        if (_this.completePost) window.location.href = "http://anasibrahimgm-app-one.herokuapp.com/";else _this.$emit('postDeleted', _this.post.id);
       }).catch(function (error) {
         console.log(error);
         if (error.response) {
@@ -49448,7 +49448,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     submitComment: function submitComment() {
       var _this2 = this;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://one.app/comments/create", {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post("http://anasibrahimgm-app-one.herokuapp.com/comments/create", {
         postid: this.post.id,
         body: this.comment
       }).then(function (response) {
@@ -49469,7 +49469,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     deleteComment: function deleteComment(commentId) {
       var _this3 = this;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://one.app/comments/" + commentId + "/delete").then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.delete("http://anasibrahimgm-app-one.herokuapp.com/comments/" + commentId + "/delete").then(function (response) {
         console.log(response);
 
         var position = _this3.post.comments.findIndex(function (element) {
@@ -49487,7 +49487,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   created: function created() {
-    this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://one.app/posts/' + this.post.slug;
+    this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://anasibrahimgm-app-one.herokuapp.com/posts/' + this.post.slug;
     this.post.slug = "../posts/" + this.post.slug;
     this.post.user.username = "../users/" + this.post.user.username;
 
@@ -49867,11 +49867,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('i', [_c('b', [_c('a', {
     attrs: {
-      "href": "http://one.app/login"
+      "href": "http://anasibrahimgm-app-one.herokuapp.com/login"
     }
   }, [_vm._v("Login")])]), _vm._v(" or "), _c('b', [_c('a', {
     attrs: {
-      "href": "http://one.app/register"
+      "href": "http://anasibrahimgm-app-one.herokuapp.com/register"
     }
   }, [_vm._v("Register")])]), _vm._v(" to add a Comment on this post")])
 }]}
@@ -50323,7 +50323,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     updateProfile: function updateProfile() {
       var _this2 = this;
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.put("http://one.app/updateProfile", {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
         avatar: this.user_avatar,
         name: this.user_name,
         bio: this.user_bio,
@@ -50753,7 +50753,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this.user_avatar = e.target.result;
         _this.user_avatar_show = e.target.result;
 
-        axios.put("http://one.app/updateProfile", {
+        axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
           avatar: _this.user_avatar
         }).then(function (response) {
           console.log(response);
@@ -50775,7 +50775,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     editName: function editName() {
       this.showEditName = false;
       this.user_name_show = this.user_name;
-      axios.put("http://one.app/updateProfile", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
         name: this.user_name
       }).then(function (response) {
         console.log(response);
@@ -50796,7 +50796,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     editBio: function editBio() {
       this.showEditBio = false;
       this.user_bio_show = this.user_bio;
-      axios.put("http://one.app/updateProfile", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
         bio: this.user_bio
       }).then(function (response) {
         console.log(response);
@@ -51203,7 +51203,7 @@ $(document).ready(function () {
         return element.id == categoryId;
       });
 
-      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('http://one.app/categories/' + categoryId + '/subscribe').then(function (response) {
+      __WEBPACK_IMPORTED_MODULE_0_axios___default.a.post('http://anasibrahimgm-app-one.herokuapp.com/categories/' + categoryId + '/subscribe').then(function (response) {
         console.log(response);
         if (response.data.category) {
           if (status) {
@@ -51475,7 +51475,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     checkData: function checkData() {
       var _this = this;
 
-      axios.put("http://one.app/updateProfile", {}).then(function (response) {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {}).then(function (response) {
         if (response.data.user) {
           //console.log(response.data.user);
           _this.user_name = response.data.user.name.split(" ")[0];

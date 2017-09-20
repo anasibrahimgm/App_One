@@ -69,7 +69,7 @@ export default{
         this.user_avatar = e.target.result;
         this.user_avatar_show = e.target.result;
 
-        axios.put("http://one.app/updateProfile", {
+        axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
           avatar: this.user_avatar,
         })
         .then(
@@ -100,7 +100,7 @@ export default{
     editName() {
       this.showEditName = false;
       this.user_name_show = this.user_name;
-      axios.put("http://one.app/updateProfile", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
         name: this.user_name,
       })
       .then(
@@ -129,7 +129,7 @@ export default{
     editBio() {
       this.showEditBio = false;
       this.user_bio_show = this.user_bio;
-      axios.put("http://one.app/updateProfile", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
         bio: this.user_bio,
       })
       .then(

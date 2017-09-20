@@ -16,7 +16,7 @@ export default {
 
   methods: {
     checkData() {
-      axios.put("http://one.app/updateProfile", {
+      axios.put("http://anasibrahimgm-app-one.herokuapp.com/updateProfile", {
       })
       .then(
         response => {

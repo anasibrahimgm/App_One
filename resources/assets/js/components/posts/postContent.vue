@@ -121,7 +121,7 @@
       </div>
 
       <div v-show="!authId" class="col-md-12" style="padding: 15px; text-align:center;">
-        <i><b><a href="http://one.app/login">Login</a></b> or <b><a href="http://one.app/register">Register</a></b> to add a Comment on this post</i>
+        <i><b><a href="http://anasibrahimgm-app-one.herokuapp.com/login">Login</a></b> or <b><a href="http://anasibrahimgm-app-one.herokuapp.com/register">Register</a></b> to add a Comment on this post</i>
       </div>
 
                                   <!-- END Comments Area -->
@@ -155,12 +155,12 @@ export default{
 
   methods: {
     deletePost() {
-      axios.delete("http://one.app/posts/" + this.post.id)
+      axios.delete("http://anasibrahimgm-app-one.herokuapp.com/posts/" + this.post.id)
       .then(
         response => {
           console.log(response);
           if (this.completePost)
-            window.location.href="http://one.app"
+            window.location.href="http://anasibrahimgm-app-one.herokuapp.com/"
           else
             this.$emit('postDeleted', this.post.id);
         }
@@ -180,7 +180,7 @@ export default{
     },
 
     submitComment() {
-      axios.post("http://one.app/comments/create", {
+      axios.post("http://anasibrahimgm-app-one.herokuapp.com/comments/create", {
         postid: this.post.id,
         body: this.comment,
       })
@@ -207,7 +207,7 @@ export default{
     },
 
     deleteComment(commentId) {
-      axios.delete("http://one.app/comments/" + commentId + "/delete")
+      axios.delete("http://anasibrahimgm-app-one.herokuapp.com/comments/" + commentId + "/delete")
       .then(
         response => {
           console.log(response);
@@ -235,7 +235,7 @@ export default{
   },
 
   created() {
-    this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://one.app/posts/' + this.post.slug;
+    this.tweetContent = 'See "' + this.post.title + '" at ' + 'http://anasibrahimgm-app-one.herokuapp.com/posts/' + this.post.slug;
     this.post.slug = "../posts/" + this.post.slug;
     this.post.user.username = "../users/" + this.post.user.username;
 

@@ -57,10 +57,10 @@ window.my_var = 'my name is anas ibrahim';
 
 var currentUser='first';
 
-myFunction();
+//myFunction();
 
 function myFunction() {
-axios.get("http://one.app/mydata/")
+axios.get("http://anasibrahimgm-app-one.herokuapp.com/mydata/")
 .then(
   response => {
     //console.log("INSIDE--currentUser, app.js");
