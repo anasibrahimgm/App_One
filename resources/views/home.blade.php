@@ -1,18 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', '|Home')
 
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Dashboard</div>
-
-                <div class="panel-body">
-                    You are logged in!
-                </div>
-            </div>
+          <posts
+            :user-data='{!! $user->toJson() !!}'
+            @if (Auth::guard('web')->check())
+              :auth-id='{!! Auth::id() !!}'
+              :home-page=true
+            @endif
+          >
+        </posts>
         </div>
     </div>
 </div>

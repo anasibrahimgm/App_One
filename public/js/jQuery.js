@@ -1,4 +1,6 @@
 $(function () {
+
+  $("#app").delay(30000).show();
   margins();
   modalPadding();
 
@@ -28,6 +30,7 @@ $(function () {
       'marginRight': y ,
     });
   }
+
 
   function modalPadding() {
     //window.console.log('window Height: ' + $(window).height());

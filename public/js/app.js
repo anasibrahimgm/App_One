@@ -1202,8 +1202,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_posts_editPost_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_posts_editPost_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_posts_postContent_vue__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_posts_postContent_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_posts_postContent_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_posts_userPosts_vue__ = __webpack_require__(68);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_posts_userPosts_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_posts_userPosts_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_posts_posts_vue__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_posts_posts_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_posts_posts_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_profile_editProfile_vue__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_profile_editProfile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_profile_editProfile_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_profile_userData_vue__ = __webpack_require__(78);
@@ -1254,7 +1254,7 @@ Vue.component('show-notifications', __WEBPACK_IMPORTED_MODULE_3__components_noti
 Vue.component('create-post', __WEBPACK_IMPORTED_MODULE_4__components_posts_createPost_vue___default.a);
 Vue.component('edit-post', __WEBPACK_IMPORTED_MODULE_5__components_posts_editPost_vue___default.a);
 Vue.component('post-content', __WEBPACK_IMPORTED_MODULE_6__components_posts_postContent_vue___default.a);
-Vue.component('user-posts', __WEBPACK_IMPORTED_MODULE_7__components_posts_userPosts_vue___default.a);
+Vue.component('posts', __WEBPACK_IMPORTED_MODULE_7__components_posts_posts_vue___default.a);
 
 Vue.component('edit-profile', __WEBPACK_IMPORTED_MODULE_8__components_profile_editProfile_vue___default.a);
 Vue.component('user-data', __WEBPACK_IMPORTED_MODULE_9__components_profile_userData_vue___default.a);
@@ -48035,10 +48035,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['notifications', 'unreadCount', 'userid'],
@@ -48047,15 +48043,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       newNotifications: []
     };
-  },
-
-
-  methods: {},
-
-  created: function created() {
-    //console.log("this.notifications: ");
-    //console.log(this.notifications);
-    //console.log("this.notifications");
   },
   mounted: function mounted() {
     var _this = this;
@@ -48066,10 +48053,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       console.log('NEW Notification');
       console.log(notification);
       console.log('NEW Notification');
-      _this.newNotifications.push(notification);
-      console.log('//////newNotifications');
-      console.log(_this.newNotifications);
-      console.log('//////newNotifications');
+      _this.newNotifications.unshift(notification);
     });
   }
 });
@@ -48080,7 +48064,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('li', {
-    staticClass: "dropdown"
+    staticClass: "dropdown",
+    attrs: {
+      "onclick": "markNotifcationsRead()"
+    }
   }, [_c('a', {
     staticClass: "dropdown-toggle",
     attrs: {
@@ -48101,35 +48088,13 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "role": "menu"
     }
-  }, [_vm._l((_vm.notifications), function(notification) {
-    return _c('li', {
-      class: (notification.read_at ? 'read' : 'unread')
-    }, [_c('span', {
-      directives: [{
-        name: "show",
-        rawName: "v-show",
-        value: (notification.type == 'App\\Notifications\\newCategoryPost'),
-        expression: "notification.type == 'App\\\\Notifications\\\\newCategoryPost'"
-      }]
-    }, [_c('a', {
-      attrs: {
-        "href": 'http://one.app/posts/' + notification.data.post_slug
-      }
-    }, [_c('b', [_vm._v(_vm._s(notification.data.post_user))]), _vm._v("\n            created a new "), _c('b', [_c('i', [_vm._v(_vm._s(notification.data.category_name))])]), _vm._v(" Post\n          ")])]), _vm._v(" "), _c('span', {
-      directives: [{
-        name: "show",
-        rawName: "v-show",
-        value: (notification.type == 'App\\Notifications\\newComment'),
-        expression: "notification.type == 'App\\\\Notifications\\\\newComment'"
-      }]
-    }, [_c('a', {
-      attrs: {
-        "href": 'http://one.app/posts/' + notification.data.post_slug
-      }
-    }, [_c('b', [_vm._v(_vm._s(notification.data.commenter))]), _vm._v("\n            commented on your "), _c('b', [_c('i', [_vm._v(_vm._s(notification.data.post_title))])]), _vm._v(" Post\n          ")])])])
-  }), _vm._v(" "), _vm._l((_vm.newNotifications), function(notification) {
+  }, [_vm._l((_vm.newNotifications), function(notification) {
     return _c('li', {
       staticClass: "unread"
+    }, [_c('a', {
+      attrs: {
+        "href": 'http://one.app/posts/' + notification.post_slug
+      }
     }, [_c('span', {
       directives: [{
         name: "show",
@@ -48137,22 +48102,36 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         value: (notification.type == 'App\\Notifications\\newCategoryPost'),
         expression: "notification.type == 'App\\\\Notifications\\\\newCategoryPost'"
       }]
-    }, [_c('a', {
-      attrs: {
-        "href": 'http://one.app/posts/' + notification.post_slug
-      }
-    }, [_c('b', [_vm._v(_vm._s(notification.post_user))]), _vm._v("\n            created a new "), _c('b', [_c('i', [_vm._v(_vm._s(notification.category_name))])]), _vm._v(" Post\n          ")])]), _vm._v(" "), _c('span', {
+    }, [_c('b', [_vm._v(_vm._s(notification.post_user))]), _vm._v("\n          created a new "), _c('b', [_c('i', [_vm._v(_vm._s(notification.category_name))])]), _vm._v(" Post\n        ")]), _vm._v(" "), _c('span', {
       directives: [{
         name: "show",
         rawName: "v-show",
         value: (notification.type == 'App\\Notifications\\newComment'),
         expression: "notification.type == 'App\\\\Notifications\\\\newComment'"
       }]
+    }, [_c('b', [_vm._v(_vm._s(notification.commenter))]), _vm._v("\n          commented on your "), _c('b', [_c('i', [_vm._v(_vm._s(notification.post_title))])]), _vm._v(" Post\n        ")])])])
+  }), _vm._v(" "), _vm._l((_vm.notifications), function(notification) {
+    return _c('li', {
+      class: (notification.read_at ? 'read' : 'unread')
     }, [_c('a', {
       attrs: {
-        "href": 'http://one.app/posts/' + notification.post_slug
+        "href": 'http://one.app/posts/' + notification.data.post_slug
       }
-    }, [_c('b', [_vm._v(_vm._s(notification.commenter))]), _vm._v("\n            commented on your "), _c('b', [_c('i', [_vm._v(_vm._s(notification.post_title))])]), _vm._v(" Post\n          ")])])])
+    }, [_c('span', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (notification.type == 'App\\Notifications\\newCategoryPost'),
+        expression: "notification.type == 'App\\\\Notifications\\\\newCategoryPost'"
+      }]
+    }, [_c('b', [_vm._v(_vm._s(notification.data.post_user))]), _vm._v("\n            created a new "), _c('b', [_c('i', [_vm._v(_vm._s(notification.data.category_name))])]), _vm._v(" Post\n          ")]), _vm._v(" "), _c('span', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (notification.type == 'App\\Notifications\\newComment'),
+        expression: "notification.type == 'App\\\\Notifications\\\\newComment'"
+      }]
+    }, [_c('b', [_vm._v(_vm._s(notification.data.commenter))]), _vm._v("\n            commented on your "), _c('b', [_c('i', [_vm._v(_vm._s(notification.data.post_title))])]), _vm._v(" Post\n          ")])])])
   })], 2)])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -49421,6 +49400,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 (function (d, s, id) {
   var js,
@@ -49797,8 +49777,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }), _vm._v(" "), _c('span', {
     staticClass: "help-block danger"
   }, [_vm._v("\n        " + _vm._s(_vm.commentError) + "\n      ")])]), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.post.comments),
+      expression: "post.comments"
+    }],
     staticClass: "col-md-12"
-  }), _vm._v(" "), _vm._l((_vm.post.comments), function(comment) {
+  }, [_c('i', {
+    staticClass: "fa fa-comments",
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }), _vm._v(" " + _vm._s((_vm.post.comments && _vm.post.comments.length == 0) ? 'No' : _vm.post.comments.length) + " Comment" + _vm._s((_vm.post.comments && _vm.post.comments.length == 1) ? '' : 's') + "\n    ")]), _vm._v(" "), _vm._l((_vm.post.comments), function(comment) {
     return _c('div', {
       staticClass: "col-md-12 comment-content"
     }, [_c('div', {
@@ -49909,13 +49900,13 @@ var Component = __webpack_require__(1)(
   /* styles */
   injectStyle,
   /* scopeId */
-  "data-v-02534d2c",
+  "data-v-29a26a92",
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/posts/userPosts.vue"
+Component.options.__file = "/home/anas/Code/App_One/resources/assets/js/components/posts/posts.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
-if (Component.options.functional) {console.error("[vue-loader] userPosts.vue: functional components are not supported with templates, they should use render functions.")}
+if (Component.options.functional) {console.error("[vue-loader] posts.vue: functional components are not supported with templates, they should use render functions.")}
 
 /* hot reload */
 if (false) {(function () {
@@ -49924,9 +49915,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-02534d2c", Component.options)
+    hotAPI.createRecord("data-v-29a26a92", Component.options)
   } else {
-    hotAPI.reload("data-v-02534d2c", Component.options)
+    hotAPI.reload("data-v-29a26a92", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -49947,13 +49938,13 @@ var content = __webpack_require__(70);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(4)("31ad4fb2", content, false);
+var update = __webpack_require__(4)("438ea177", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02534d2c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./userPosts.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-02534d2c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./userPosts.vue");
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-29a26a92\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./posts.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-29a26a92\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./posts.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -49971,7 +49962,7 @@ exports = module.exports = __webpack_require__(3)(undefined);
 
 
 // module
-exports.push([module.i, "\n.posts-container[data-v-02534d2c] {\n  margin-top: 10px;\n}\n", ""]);
+exports.push([module.i, "\n.posts-container[data-v-29a26a92] {\n  margin-top: 10px;\n}\n", ""]);
 
 // exports
 
@@ -50011,15 +50002,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['userData', 'authId'],
+  props: ['userData', 'authId', 'homePage'],
 
   data: function data() {
     return {
       owner: false,
-      user: this.userData
+      user: this.userData,
+      posts: []
     };
   },
 
@@ -50040,6 +50031,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   created: function created() {
     if (this.authId && this.authId == this.user.id) {
       this.owner = true;
+    }
+
+    if (this.homePage) {
+      console.log("Home PAGE");
+      this.posts = this.user.mergedPosts; //+ this.user.categories.posts;
+      //console.log(this.posts);
+    } else {
+      //console.log("USER PAGE");
+      this.posts = this.user.posts;
     }
 
     if (this.user.posts && this.user.posts.length > 1) this.user.posts.reverse();
@@ -50090,7 +50090,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "lead"
   }, [_vm._v("This User has No Posts")]), _vm._v(" "), _c('div', {
     staticClass: "col-md-12 posts-container"
-  }, _vm._l((_vm.user.posts), function(post) {
+  }, _vm._l((_vm.posts), function(post) {
     return _c('div', [_c('post-content', {
       attrs: {
         "post": post,
@@ -50108,7 +50108,7 @@ module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-02534d2c", module.exports)
+     require("vue-hot-reload-api").rerender("data-v-29a26a92", module.exports)
   }
 }
 
@@ -51292,7 +51292,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "posts"
     }
-  }, [_c('user-posts', {
+  }, [_c('posts', {
     attrs: {
       "user-data": _vm.profileUser,
       "authId": _vm.authId
@@ -51536,7 +51536,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "currentUser_name"
     }
-  }, [_vm._v(" " + _vm._s(_vm.user_name))])])])
+  }, [_vm._v(" " + _vm._s(_vm.user_name[0].toUpperCase() + _vm.user_name.slice(1)))])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

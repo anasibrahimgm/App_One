@@ -24,7 +24,7 @@ import showNotifications from './components/notifications/notifications.vue'
 import createPost from './components/posts/createPost.vue'
 import editPost from './components/posts/editPost.vue'
 import postContent from './components/posts/postContent.vue'
-import profilePosts from './components/posts/userPosts.vue'
+import posts from './components/posts/posts.vue'
 
 import editProfile from './components/profile/editProfile.vue'
 import userData from './components/profile/userData.vue'
@@ -41,7 +41,7 @@ Vue.component('show-notifications', showNotifications);
 Vue.component('create-post', createPost);
 Vue.component('edit-post', editPost);
 Vue.component('post-content', postContent);
-Vue.component('user-posts', profilePosts);
+Vue.component('posts', posts);
 
 Vue.component('edit-profile', editProfile);
 Vue.component('user-data', userData);

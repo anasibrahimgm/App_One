@@ -26,11 +26,11 @@
               <div class="tab-content info">
 
                 <div id="posts" class="tab-pane fade in active">
-                  <user-posts
-                    :user="profileUser"
+                  <posts
+                    :user-data="profileUser"
                     :authId="authId"
                   >
-                  </user-posts>
+                  </posts>
                 </div>
                 <div id="cats" class="tab-pane fade">
 

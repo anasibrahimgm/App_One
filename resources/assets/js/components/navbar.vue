@@ -1,5 +1,5 @@
 <template>
-    <li><a @mouseover="checkData" id="currentUser_data" :href="'/users/' +user_username"><img  :src="'../images/users/avatars/' + user_avatar" /><span id="currentUser_name"> {{  user_name }}</span></a></li>
+    <li><a @mouseover="checkData" id="currentUser_data" :href="'/users/' +user_username"><img  :src="'../images/users/avatars/' + user_avatar" /><span id="currentUser_name"> {{  user_name[0].toUpperCase() + user_name.slice(1) }}</span></a></li>
 </template>
 
 <script>

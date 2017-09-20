@@ -102,8 +102,8 @@
         </span>
       </div>
 
-      <div class="col-md-12">
-        <i class="fa fa-comments" aria-hidden="true"></i> {{ post.comments.length == 0 ? 'No' : post.comments.length }} Comment{{ post.comments.length == 1 ? '' : 's'}}
+      <div class="col-md-12" v-show="post.comments">
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ (post.comments && post.comments.length == 0) ? 'No' : post.comments.length }} Comment{{ (post.comments && post.comments.length == 1) ? '' : 's'}}
       </div>
 
       <div class="col-md-12 comment-content" v-for="comment in post.comments">
@@ -111,7 +111,7 @@
           <img :src="'../images/users/avatars/' + comment.user.avatar" style="width: 50px; height: 50px;"/>
         </div>
         <div class="comment-content-middle">
-          <h4 style="margin-bottom:0;"><a :href="'../users/' + comment.user.username ">{{ comment.user.name }}</a></h4>
+          <h4 style="margin-bottom:0;"><a :href="'../users/' + comment.user.username ">{{ comment.user.name }}</a><span class="comment-time">{{ comment.created_at }}</span></h4>
           <p>{{ comment.body }}</p>
         </div>
 
@@ -141,7 +141,7 @@
 import axios from 'axios';
 
 export default{
-  props: ['postData', 'authId', 'completePost'],
+  props: ['post', 'authId', 'completePost'],
 
   data() {
     return {
@@ -149,9 +149,6 @@ export default{
       comment: '',
       commentError: '',
       tweetContent: '',
-      deletedComment:'',
-
-      post:this.postData,
 
     }
   },
@@ -199,8 +196,8 @@ export default{
         error => {
           console.log(error);
           if (error.response) {
-             //console.log("Error 1");
-             //console.log(error.response);
+             console.log("Error 1");
+             console.log(error.response.data);
 
              if (error.response.data.body)
                 this.commentError = error.response.data.body[0];
@@ -244,6 +241,8 @@ export default{
 
     if (this.post.image)
       this.postImage = "../images/posts/" +this.post.image;
+
+    this.post.comments.reverse();
   },
 
 }
@@ -362,7 +361,7 @@ export default{
 }
 
 .badge-info {
-  background-color: #1B95E0;
+  background-color: rgb(27, 224, 171);
   border-radius: 2px;
 }
 
@@ -374,5 +373,13 @@ export default{
 
 .social-share li{
   display:inline;
+}
+
+.comment-time {
+  font-size: 14px;
+  font-family: 'Open Sans Condensed', sans-serif;
+  margin-left: 10px;
+  font-weight: lighter;
+  color: #BABEC4 !important;
 }
 </style>

@@ -4,7 +4,7 @@
 
 @section('content')
   <post-content
-    :post-data='{!! $post->toJson() !!}'
+    :post='{!! $post->toJson() !!}'
     :complete-post='true'
     @if (Auth::guard('web')->check())
       :auth-id='{!! Auth::id() !!}'

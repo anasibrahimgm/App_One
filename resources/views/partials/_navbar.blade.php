@@ -40,14 +40,14 @@
                   :notifications= '{!! Auth::user()->notifications->toJson() !!}'
                   :unread-count= '{!! count(Auth::user()->unreadNotifications) !!}'
                   :userid= '{!! Auth::guard('web')->id() !!}'
-                  ></show-notifications>                  
+                  ></show-notifications>
 
-                  @if (Request::is('editProfile') || Request::is('users/'. Auth::user()->username) )
+                  @if (Request::is('editProfile') || Request::is('users/'. Auth::guard('web')->user()->username) )
                     <navbar
                       :auth-user='{!! Auth::user()->toJson() !!}'
                     ></navbar>
                   @else
-                    <li><a id="currentUser_data" href="{{ route('users.show', Auth::user()->username ) }}"><img  src="{{asset('images/users/avatars/')}}/{{ Auth::user()->avatar }}" /><span id="currentUser_name"> {{ explode(" ", Auth::user()->name)[0]}}</span></a></li>
+                    <li><a id="currentUser_data" href="{{ route('users.show', Auth::user()->username ) }}"><img  src="{{asset('images/users/avatars/')}}/{{ Auth::user()->avatar }}" /><span id="currentUser_name"> {{ ucwords(explode(" ", Auth::user()->name)[0]) }}</span></a></li>
                   @endif
                   <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">

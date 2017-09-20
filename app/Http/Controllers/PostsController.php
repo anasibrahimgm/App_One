@@ -78,6 +78,8 @@ class PostsController extends Controller
           }
         }
 
+        $post = Post::with('comments.user', 'category', 'user')->find($post->id);
+
         return response()->json(['message', 'Post Successfully Created', 'post' => $post], 200);
     }
 

@@ -15,7 +15,7 @@
 
 </head>
 <body>
-    <div id="app">
+    <div id="app" hidden="true">
         @include('../partials._navbar')
 
         @yield('content')

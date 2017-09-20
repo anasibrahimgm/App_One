@@ -78,7 +78,7 @@ class CategoryController extends Controller
     if (($category->admin_id == $currentAdmin->id) || ($currentAdmin->role == 1) || ($currentAdmin->role < $category->admin->role))
     {
       //$category->users()->detach();// detatch all the users from the category
-      $category->posts()->detach();
+      //$category->posts()->detach();
       $category->delete();
       return response()->json(['message' => 'Category Successfully DELETED'], 200);
     }

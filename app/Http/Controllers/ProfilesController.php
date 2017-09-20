@@ -35,7 +35,7 @@ class ProfilesController extends Controller
     public function show($username)//show profile
     {
         $user = User::where('username', $username)
-                ->with('categories', 'posts.category', 'posts.user', 'posts.comments', 'posts.comments.user', 'comments')
+                ->with('categories.posts', 'posts.category', 'posts.user', 'posts.comments', 'posts.comments.user', 'comments')
                 ->first();
 
         $categories = Category::all();//->only('id', 'name', 'description');
