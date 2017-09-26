@@ -7,6 +7,27 @@
             </a>
         </div>
     </div>
+  @elseif( Auth::guard('admin')->check() )
+  <div class="container">
+      <div class="navbar-header">
+          <a class="navbar-brand navA" href="{{ url('/') }}">
+              <i class="fa fa-home fa-lg" aria-hidden="true"></i> {{ config('app.name', 'Laravel') }}
+          </a>
+          <a class="navbar-brand" href="{{ route('admin.dashboard') }}">Dashboard</a>
+      </div>
+
+      <div class="nav navbar-nav navbar-right">
+        <a class="navbar-brand" href="{{ route('admin.logout') }}"
+          onclick="event.preventDefault();
+                   document.getElementById('logout-form').submit();">
+          <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Logout
+        </a>
+
+        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+            {{ csrf_field() }}
+        </form>
+      </div>
+  </div>
   @else
   <div class="container">
       <div class="navbar-header">

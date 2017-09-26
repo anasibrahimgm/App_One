@@ -8,7 +8,7 @@
                 <div class="panel-heading">ADMIN Dashboard</div>
 
                 <div class="panel-body">
-                    You are logged in as ADMIN!
+                    <a href="{{ route('categories.index') }}" class="btn btn-default">Categories</a>
                 </div>
             </div>
         </div>
