@@ -17,7 +17,7 @@ class CreateOneCategoryUserTable extends Migration
           $table->increments('id');
 
           $table->integer('category_id')->unsigned();
-          $table->foreign('category_id')->references('id')->on('one_categories');
+          $table->foreign('category_id')->references('id')->on('one_categories')->onDelete('cascade');
 
           $table->integer('user_id')->unsigned();
           $table->foreign('user_id')->references('id')->on('one_users');

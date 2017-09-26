@@ -22,7 +22,7 @@ class CreateCommentsTable extends Migration
             $table->foreign('user_id')->references('id')->on('one_users');
 
             $table->integer('post_id')->unsigned();
-            $table->foreign('post_id')->references('id')->on('one_posts');
+            $table->foreign('post_id')->references('id')->on('one_posts')->onDelete('cascade');;
         });
     }
 
