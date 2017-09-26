@@ -22,6 +22,14 @@ class CategoryController extends Controller
   {
     return view('categories.admin.index');
   }
+  public function showCategories()
+  {
+    $categories = Category::with('admin')
+                   ->withCount('users', 'posts as catPosts')
+                   ->orderBy('created_at', 'desc')
+                   ->get();
+     return response()->json(['categories' => $categories], 200);
+   }
 
   public function show($id)
   {

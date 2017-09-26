@@ -67,6 +67,7 @@ Route::get('postcomments/{id}', 'CommentsController@showPostComments');
 
 Route::prefix('/admin/categories')->group(function() {
   Route::get('/','CategoryController@index')->name('categories.index');
+  Route::get('/show','CategoryController@showCategories')->name('categories.show');
   Route::get('/{id}','CategoryController@show')->name('categories.show');
   Route::post('/create','CategoryController@store')->name('categories.store');
   Route::put('/{id}/edit','CategoryController@update')->name('categories.update');
